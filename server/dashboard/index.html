@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JAWDA — CRM Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:         #f5f0e8;
+      --bg2:        #eee8d8;
+      --white:      #ffffff;
+      --brown:      #8b7355;
+      --brown-dark: #5c4a32;
+      --text:       #3a2e22;
+      --text-light: #7a6a58;
+      --border:     #ddd5c0;
+      --shadow:     0 2px 16px rgba(90,70,40,0.10);
+
+      --pending:    #f39c12;
+      --processing: #3498db;
+      --shipped:    #9b59b6;
+      --delivered:  #27ae60;
+      --cancelled:  #e74c3c;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* === HEADER === */
+    .header {
+      background: var(--brown-dark);
+      padding: 0 32px;
+      height: 64px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+    .header-brand { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: #fff; letter-spacing: 3px; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .live-badge {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.12); color: #fff;
+      padding: 6px 14px; border-radius: 20px; font-size: 0.8rem;
+    }
+    .live-dot { width: 8px; height: 8px; background: #2ecc71; border-radius: 50%; animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+
+    /* === LAYOUT === */
+    .main { max-width: 1400px; margin: 0 auto; padding: 28px 24px; }
+
+    /* === STATS CARDS === */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card {
+      background: var(--white); border-radius: 14px; padding: 20px;
+      box-shadow: var(--shadow); text-align: center;
+      transition: transform 0.2s;
+    }
+    .stat-card:hover { transform: translateY(-2px); }
+    .stat-num { font-size: 2rem; font-weight: 700; color: var(--brown-dark); line-height: 1; }
+    .stat-label { font-size: 0.8rem; color: var(--text-light); margin-top: 6px; text-transform: uppercase; letter-spacing: 1px; }
+    .stat-card.revenue .stat-num { font-size: 1.6rem; color: #27ae60; }
+
+    /* === TOOLBAR === */
+    .toolbar {
+      display: flex; gap: 12px; align-items: center;
+      flex-wrap: wrap; margin-bottom: 20px;
+    }
+    .search-box {
+      flex: 1; min-width: 200px;
+      padding: 10px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px; background: var(--white);
+      font-family: 'Inter', sans-serif; font-size: 0.9rem; color: var(--text);
+      outline: none; transition: border-color 0.2s;
+    }
+    .search-box:focus { border-color: var(--brown); }
+
+    .filter-tabs { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ftab {
+      padding: 8px 16px; border-radius: 20px; border: 1.5px solid var(--border);
+      background: var(--white); cursor: pointer; font-size: 0.82rem;
+      font-family: 'Inter', sans-serif; color: var(--text-light);
+      transition: all 0.2s;
+    }
+    .ftab.active { background: var(--brown-dark); border-color: var(--brown-dark); color: #fff; }
+
+    /* === TABLE === */
+    .table-wrap { background: var(--white); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--bg2); }
+    th { padding: 14px 16px; text-align: left; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); font-weight: 600; }
+    tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    tbody tr:hover { background: var(--bg); }
+    tbody tr.new-flash { animation: flashRow 1s ease; }
+    @keyframes flashRow { from { background: #fff9e6; } to { background: transparent; } }
+    td { padding: 14px 16px; font-size: 0.88rem; vertical-align: middle; }
+    .empty-row td { text-align: center; color: var(--text-light); padding: 48px; }
+
+    /* === STATUS BADGE === */
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;
+    }
+    .badge-pending    { background: #fef3cd; color: #856404; }
+    .badge-processing { background: #cfe2ff; color: #084298; }
+    .badge-shipped    { background: #e8d5f5; color: #6f2da8; }
+    .badge-delivered  { background: #d1f2e0; color: #0f5132; }
+    .badge-cancelled  { background: #fcd9d9; color: #842029; }
+
+    /* === ACTIONS === */
+    .btn-status {
+      padding: 6px 12px; border-radius: 8px; border: 1.5px solid var(--border);
+      background: var(--bg); cursor: pointer; font-size: 0.8rem;
+      font-family: 'Inter', sans-serif; color: var(--text-light);
+      transition: all 0.15s;
+    }
+    .btn-status:hover { border-color: var(--brown); color: var(--brown-dark); background: var(--white); }
+    .btn-detail {
+      padding: 6px 12px; border-radius: 8px; border: none;
+      background: var(--brown-dark); color: #fff; cursor: pointer; font-size: 0.8rem;
+      font-family: 'Inter', sans-serif;
+      transition: background 0.15s;
+    }
+    .btn-detail:hover { background: var(--brown); }
+
+    /* === ORDER DETAIL MODAL === */
+    .modal-bg {
+      display: none; position: fixed; inset: 0; z-index: 200;
+      background: rgba(30,20,10,0.5); backdrop-filter: blur(3px);
+    }
+    .modal-bg.open { display: flex; align-items: center; justify-content: center; }
+    .modal {
+      background: var(--white); border-radius: 20px;
+      width: min(95vw, 640px); max-height: 90vh; overflow-y: auto;
+      padding: 36px; box-shadow: 0 24px 60px rgba(0,0,0,0.2);
+      animation: slideUp 0.25s ease;
+    }
+    @keyframes slideUp { from { transform:translateY(20px); opacity:0; } to { transform:translateY(0); opacity:1; } }
+    .modal-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+    .modal-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; color: var(--brown-dark); }
+    .modal-close-btn { background: var(--bg2); border: none; border-radius: 50%; width:32px; height:32px; cursor: pointer; font-size:1rem; color:var(--text-light); }
+
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+    .detail-block label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); display: block; margin-bottom: 4px; }
+    .detail-block span { font-size: 0.92rem; color: var(--text); font-weight: 500; }
+
+    .items-list { margin-bottom: 24px; }
+    .items-list h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); margin-bottom: 12px; }
+    .order-item-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+    .order-total-row { display: flex; justify-content: space-between; font-weight: 700; padding-top: 12px; color: var(--brown-dark); }
+
+    .timeline { margin-bottom: 24px; }
+    .timeline h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); margin-bottom: 12px; }
+    .timeline-item { display: flex; gap: 12px; margin-bottom: 10px; font-size: 0.85rem; }
+    .tl-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--brown); flex-shrink: 0; margin-top: 4px; }
+    .tl-date { color: var(--text-light); font-size: 0.78rem; }
+
+    .update-form { border-top: 1px solid var(--border); padding-top: 20px; }
+    .update-form h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-light); margin-bottom: 14px; }
+    .update-form select, .update-form input {
+      width: 100%; padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: 'Inter', sans-serif; font-size: 0.9rem; color: var(--text);
+      background: var(--bg); outline: none; margin-bottom: 10px;
+      transition: border-color 0.2s;
+    }
+    .update-form select:focus, .update-form input:focus { border-color: var(--brown); }
+    .btn-update {
+      width: 100%; background: var(--brown-dark); color: #fff; border: none;
+      padding: 12px; border-radius: 8px; font-family: 'Inter', sans-serif;
+      font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-update:hover { background: var(--brown); }
+
+    /* === TOAST === */
+    .toast {
+      position: fixed; bottom: 24px; right: 24px; z-index: 999;
+      background: var(--brown-dark); color: #fff;
+      padding: 12px 22px; border-radius: 10px;
+      font-size: 0.88rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      transform: translateY(80px); opacity: 0;
+      transition: all 0.3s ease; pointer-events: none;
+    }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    /* === PAGE TABS === */
+    .page-tabs {
+      display: flex; gap: 4px;
+      background: rgba(255,255,255,0.12);
+      border-radius: 10px; padding: 4px;
+    }
+    .page-tab {
+      padding: 7px 18px; border-radius: 7px; border: none;
+      background: transparent; color: rgba(255,255,255,0.7);
+      font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 500;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .page-tab.active { background: rgba(255,255,255,0.22); color: #fff; }
+    .page-tab:hover:not(.active) { color: #fff; }
+
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* === PRODUCTS PAGE === */
+    .products-toolbar {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+    }
+    .btn-add {
+      background: var(--brown-dark); color: #fff; border: none;
+      padding: 10px 20px; border-radius: 10px; font-family: 'Inter', sans-serif;
+      font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .btn-add:hover { background: var(--brown); }
+
+    .products-grid-crm {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;
+    }
+    .product-card-crm {
+      background: var(--white); border-radius: 14px; overflow: hidden;
+      box-shadow: var(--shadow); transition: transform 0.2s;
+    }
+    .product-card-crm:hover { transform: translateY(-3px); }
+    .product-card-crm img {
+      width: 100%; height: 200px; object-fit: cover; display: block;
+    }
+    .product-card-crm .info { padding: 14px; }
+    .product-card-crm .pname { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+    .product-card-crm .pcat  { font-size: 0.75rem; color: var(--brown); text-transform: uppercase; letter-spacing: 1px; }
+    .product-card-crm .pprice { font-size: 1.1rem; font-weight: 700; color: var(--brown-dark); margin: 8px 0; }
+    .product-card-crm .pactions { display: flex; gap: 8px; margin-top: 10px; }
+    .btn-edit-p {
+      flex: 1; padding: 7px; border-radius: 7px; border: 1.5px solid var(--border);
+      background: var(--bg); cursor: pointer; font-size: 0.8rem; font-family: 'Inter', sans-serif;
+      transition: all 0.15s;
+    }
+    .btn-edit-p:hover { border-color: var(--brown); color: var(--brown-dark); }
+    .btn-del-p {
+      padding: 7px 12px; border-radius: 7px; border: 1.5px solid #fcd9d9;
+      background: #fcd9d9; color: #842029; cursor: pointer; font-size: 0.8rem;
+      font-family: 'Inter', sans-serif; transition: all 0.15s;
+    }
+    .btn-del-p:hover { background: #f5c2c7; }
+    .badge-crm {
+      display: inline-block; background: var(--brown-dark); color: #fff;
+      font-size: 0.68rem; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      padding: 3px 8px; border-radius: 12px; margin-left: 6px;
+    }
+    .inactive-overlay {
+      position: absolute; inset: 0; background: rgba(255,255,255,0.6);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; color: var(--text-light); font-size: 0.85rem;
+    }
+    .product-card-crm { position: relative; }
+
+    /* === PRODUCT FORM MODAL === */
+    .pform-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .pform-group label { font-size: 0.78rem; font-weight: 500; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.5px; }
+    .pform-group input, .pform-group select, .pform-group textarea {
+      padding: 10px 14px; border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: 'Inter', sans-serif; font-size: 0.9rem; color: var(--text);
+      background: var(--bg); outline: none; transition: border-color 0.2s;
+    }
+    .pform-group input:focus, .pform-group select:focus { border-color: var(--brown); background: var(--white); }
+    .pform-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .img-preview { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-top: 8px; display: none; }
+
+    @media (max-width: 768px) {
+      th:nth-child(3), td:nth-child(3),
+      th:nth-child(5), td:nth-child(5) { display: none; }
+      .detail-grid { grid-template-columns: 1fr; }
+      .pform-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-brand">JAWDA</div>
+  <div class="header-right">
+    <div class="page-tabs">
+      <button class="page-tab active" onclick="switchPage('orders',this)">📋 Orders</button>
+      <button class="page-tab"        onclick="switchPage('products',this)">🛍️ Products</button>
+    </div>
+    <div class="live-badge">
+      <div class="live-dot" id="liveDot"></div>
+      <span id="liveLabel">Connecting...</span>
+    </div>
+  </div>
+</header>
+
+<div class="main">
+<!-- ====== ORDERS PAGE ====== -->
+<div class="page active" id="page-orders">
+
+  <!-- Stats -->
+  <div class="stats" id="statsRow">
+    <div class="stat-card">
+      <div class="stat-num" id="s-total">—</div>
+      <div class="stat-label">Total Orders</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--pending)" id="s-pending">—</div>
+      <div class="stat-label">Pending</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--processing)" id="s-processing">—</div>
+      <div class="stat-label">Processing</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--shipped)" id="s-shipped">—</div>
+      <div class="stat-label">Shipped</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num" style="color:var(--delivered)" id="s-delivered">—</div>
+      <div class="stat-label">Delivered</div>
+    </div>
+    <div class="stat-card revenue">
+      <div class="stat-num" id="s-revenue">—</div>
+      <div class="stat-label">Revenue ($)</div>
+    </div>
+  </div>
+
+  <!-- Toolbar -->
+  <div class="toolbar">
+    <input class="search-box" id="searchInput" placeholder="🔍  Search by name, email or ref..." oninput="applyFilters()"/>
+    <div class="filter-tabs">
+      <button class="ftab active" data-status="all"        onclick="setFilter('all',this)">All</button>
+      <button class="ftab"        data-status="pending"    onclick="setFilter('pending',this)">Pending</button>
+      <button class="ftab"        data-status="processing" onclick="setFilter('processing',this)">Processing</button>
+      <button class="ftab"        data-status="shipped"    onclick="setFilter('shipped',this)">Shipped</button>
+      <button class="ftab"        data-status="delivered"  onclick="setFilter('delivered',this)">Delivered</button>
+      <button class="ftab"        data-status="cancelled"  onclick="setFilter('cancelled',this)">Cancelled</button>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Ref</th>
+          <th>Customer</th>
+          <th>Date</th>
+          <th>Total</th>
+          <th>Payment</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="ordersBody">
+        <tr class="empty-row"><td colspan="7">Loading orders...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+</div><!-- /page-orders -->
+
+<!-- ====== PRODUCTS PAGE ====== -->
+<div class="page" id="page-products">
+  <div class="products-toolbar">
+    <h2 style="font-family:'Playfair Display',serif;color:var(--brown-dark);font-size:1.5rem;">Products</h2>
+    <button class="btn-add" onclick="openProductForm()">+ Add Product</button>
+  </div>
+  <div class="products-grid-crm" id="productsGridCrm"></div>
+</div>
+
+<!-- Product Form Modal -->
+<div class="modal-bg" id="productModalBg" onclick="closeProductModal(event)">
+  <div class="modal" id="productModalContent">
+    <div class="modal-header">
+      <div class="modal-title" id="productModalTitle">Add Product</div>
+      <button class="modal-close-btn" onclick="closeProductModal()">✕</button>
+    </div>
+    <form onsubmit="saveProduct(event)">
+      <input type="hidden" id="editProductId"/>
+      <div class="pform-row">
+        <div class="pform-group">
+          <label>Product Name</label>
+          <input type="text" id="pName" placeholder="e.g. Silk Blouse" required/>
+        </div>
+        <div class="pform-group">
+          <label>Price ($)</label>
+          <input type="number" id="pPrice" placeholder="59.00" step="0.01" min="0" required/>
+        </div>
+      </div>
+      <div class="pform-row">
+        <div class="pform-group">
+          <label>Category</label>
+          <select id="pCategory" required>
+            <option value="clothing">Clothing</option>
+            <option value="home">Home Accessories</option>
+          </select>
+        </div>
+        <div class="pform-group">
+          <label>Badge (optional)</label>
+          <select id="pBadge">
+            <option value="">None</option>
+            <option value="New">New</option>
+            <option value="Best Seller">Best Seller</option>
+            <option value="Sale">Sale</option>
+            <option value="Limited">Limited</option>
+          </select>
+        </div>
+      </div>
+      <div class="pform-group">
+        <label>Image URL</label>
+        <input type="url" id="pImg" placeholder="https://..." oninput="previewImg(this)"/>
+        <img id="imgPreview" class="img-preview"/>
+      </div>
+      <div class="pform-group">
+        <label>Visible on site</label>
+        <select id="pActive">
+          <option value="true">✅ Visible</option>
+          <option value="false">🚫 Hidden</option>
+        </select>
+      </div>
+      <button type="submit" class="btn-update" id="productSaveBtn">Save Product</button>
+    </form>
+  </div>
+</div>
+
+<!-- Order Detail Modal -->
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = '';  // same origin
+let allOrders = [];
+
+// WhatsApp link helper
+function waLink(phone, message) {
+  const clean = String(phone || '').replace(/\D/g, '');
+  if (!clean) return '#';
+  return 'https://wa.me/' + clean + '?text=' + encodeURIComponent(message);
+}
+let activeFilter = 'all';
+let activeSearch = '';
+let currentOrderRef = null;
+
+// ===== SSE =====
+function connectSSE() {
+  const es = new EventSource(`${API}/api/stream`);
+
+  es.addEventListener('stats', e => updateStats(JSON.parse(e.data)));
+
+  es.addEventListener('new-order', e => {
+    const order = JSON.parse(e.data);
+    allOrders.unshift(order);
+    renderTable();
+    updateStats(null); // refetch
+    flashRow(order.ref);
+    showToast(`🛍️ New order: ${order.ref}`);
+  });
+
+  es.addEventListener('order-updated', e => {
+    const order = JSON.parse(e.data);
+    const idx = allOrders.findIndex(o => o.ref === order.ref);
+    if (idx !== -1) allOrders[idx] = order;
+    else allOrders.unshift(order);
+    renderTable();
+    fetchStats();
+    showToast(`🔄 ${order.ref} → ${order.status}`);
+    if (currentOrderRef === order.ref) openModal(order.ref);
+  });
+
+  es.onopen  = () => { document.getElementById('liveLabel').textContent = 'Live'; };
+  es.onerror = () => { document.getElementById('liveLabel').textContent = 'Reconnecting...'; };
+}
+
+// ===== FETCH =====
+async function fetchOrders() {
+  const res = await fetch(`${API}/api/orders`);
+  allOrders = await res.json();
+  renderTable();
+}
+
+async function fetchStats() {
+  const res = await fetch(`${API}/api/orders/stats`);
+  updateStats(await res.json());
+}
+
+function updateStats(s) {
+  if (!s) { fetchStats(); return; }
+  document.getElementById('s-total').textContent     = s.total;
+  document.getElementById('s-pending').textContent   = s.pending;
+  document.getElementById('s-processing').textContent= s.processing;
+  document.getElementById('s-shipped').textContent   = s.shipped;
+  document.getElementById('s-delivered').textContent = s.delivered;
+  document.getElementById('s-revenue').textContent   = '$' + s.revenue.toFixed(2);
+}
+
+// ===== TABLE RENDER =====
+function getFiltered() {
+  return allOrders.filter(o => {
+    const matchStatus = activeFilter === 'all' || o.status === activeFilter;
+    const q = activeSearch.toLowerCase();
+    const matchSearch = !q ||
+      o.ref.toLowerCase().includes(q) ||
+      o.customer.email.toLowerCase().includes(q) ||
+      `${o.customer.firstName} ${o.customer.lastName}`.toLowerCase().includes(q);
+    return matchStatus && matchSearch;
+  });
+}
+
+function renderTable() {
+  const orders = getFiltered();
+  const tbody  = document.getElementById('ordersBody');
+  if (!orders.length) {
+    tbody.innerHTML = '<tr class="empty-row"><td colspan="7">No orders found.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = orders.map(o => {
+    const total = o.items.reduce((s, i) => s + i.price * i.qty, 0);
+    const date  = new Date(o.createdAt).toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' });
+    return `
+    <tr id="row-${o.ref}">
+      <td><strong>${o.ref}</strong></td>
+      <td>
+        <div style="font-weight:500">${o.customer.firstName} ${o.customer.lastName}</div>
+        <div style="color:var(--text-light);font-size:0.78rem">${o.customer.email}</div>
+      </td>
+      <td style="color:var(--text-light)">${date}</td>
+      <td><strong>$${total.toFixed(2)}</strong></td>
+      <td style="color:var(--text-light)">${o.paymentMethod || '—'}</td>
+      <td><span class="badge badge-${o.status}">${statusIcon(o.status)} ${cap(o.status)}</span></td>
+      <td style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-detail" onclick="openModal('${o.ref}')">Details</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function statusIcon(s) {
+  return { pending:'🕐', processing:'⚙️', shipped:'🚚', delivered:'✅', cancelled:'❌' }[s] || '';
+}
+function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function flashRow(ref) {
+  const row = document.getElementById('row-' + ref);
+  if (row) { row.classList.remove('new-flash'); void row.offsetWidth; row.classList.add('new-flash'); }
+}
+
+// ===== FILTERS =====
+function setFilter(status, btn) {
+  activeFilter = status;
+  document.querySelectorAll('.ftab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+function applyFilters() {
+  activeSearch = document.getElementById('searchInput').value;
+  renderTable();
+}
+
+// ===== MODAL =====
+function openModal(ref) {
+  const o = allOrders.find(o => o.ref === ref);
+  if (!o) return;
+  currentOrderRef = ref;
+  const total = o.items.reduce((s, i) => s + i.price * i.qty, 0);
+  const date  = new Date(o.createdAt).toLocaleString('en-GB');
+
+  document.getElementById('modalContent').innerHTML = `
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Order ${o.ref}</div>
+        <span class="badge badge-${o.status}" style="margin-top:6px;display:inline-flex">${statusIcon(o.status)} ${cap(o.status)}</span>
+      </div>
+      <button class="modal-close-btn" onclick="closeModal()">✕</button>
+    </div>
+
+    ${o.customer.phone ? `
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">
+      <a href="${waLink(o.customer.phone, 'Bonjour ' + o.customer.firstName + ' ! Ici JAWDA 👋\nConcernant votre commande *' + o.ref + '*:\n')}"
+         target="_blank"
+         style="display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;padding:10px 18px;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        Message Client
+      </a>
+      <a href="mailto:${o.customer.email}"
+         style="display:inline-flex;align-items:center;gap:8px;background:#5c4a32;color:#fff;padding:10px 18px;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">
+        ✉️ Email Client
+      </a>
+    </div>` : `
+    <div style="margin-bottom:16px;">
+      <a href="mailto:${o.customer.email}"
+         style="display:inline-flex;align-items:center;gap:8px;background:#5c4a32;color:#fff;padding:10px 18px;border-radius:8px;font-size:.85rem;font-weight:600;text-decoration:none;">
+        ✉️ Email Client
+      </a>
+    </div>`}
+
+    <div class="detail-grid">
+      <div class="detail-block"><label>Customer</label><span>${o.customer.firstName} ${o.customer.lastName}</span></div>
+      <div class="detail-block"><label>Email</label><span>${o.customer.email}</span></div>
+      <div class="detail-block"><label>Phone</label><span>${o.customer.phone || '—'}</span></div>
+      <div class="detail-block"><label>Date</label><span>${date}</span></div>
+      <div class="detail-block"><label>Payment</label><span>${o.paymentMethod || '—'}</span></div>
+      <div class="detail-block"><label>Shipping</label><span>${o.customer.address}, ${o.customer.city} ${o.customer.zip}, ${o.customer.country}</span></div>
+      ${o.trackingNumber ? `<div class="detail-block"><label>Tracking</label><span>${o.trackingNumber}${o.carrier ? ' ('+o.carrier+')' : ''}</span></div>` : ''}
+    </div>
+
+    <div class="items-list">
+      <h4>Items</h4>
+      ${o.items.map(i => `
+        <div class="order-item-row">
+          <span>${i.name} <span style="color:var(--text-light)">×${i.qty}</span></span>
+          <span>$${(i.price * i.qty).toFixed(2)}</span>
+        </div>`).join('')}
+      <div class="order-total-row"><span>Total</span><span>$${total.toFixed(2)}</span></div>
+    </div>
+
+    <div class="timeline">
+      <h4>Timeline</h4>
+      ${(o.timeline || []).map(t => `
+        <div class="timeline-item">
+          <div class="tl-dot"></div>
+          <div>
+            <div><strong>${cap(t.status)}</strong>${t.note ? ' — ' + t.note : ''}</div>
+            <div class="tl-date">${new Date(t.date).toLocaleString('en-GB')}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+
+    <div class="update-form">
+      <h4>Update Status</h4>
+      <select id="newStatus">
+        <option value="pending"    ${o.status==='pending'?'selected':''}>🕐 Pending</option>
+        <option value="processing" ${o.status==='processing'?'selected':''}>⚙️ Processing</option>
+        <option value="shipped"    ${o.status==='shipped'?'selected':''}>🚚 Shipped</option>
+        <option value="delivered"  ${o.status==='delivered'?'selected':''}>✅ Delivered</option>
+        <option value="cancelled"  ${o.status==='cancelled'?'selected':''}>❌ Cancelled</option>
+      </select>
+      <input type="text" id="trackingInput" placeholder="Tracking number (optional)" value="${o.trackingNumber || ''}"/>
+      <input type="text" id="carrierInput"  placeholder="Carrier (DHL, FedEx, UPS...)" value="${o.carrier || ''}"/>
+      <input type="text" id="noteInput"     placeholder="Internal note (optional)"/>
+      <button class="btn-update" onclick="updateStatus('${o.ref}')">Update & Notify Customer</button>
+    </div>`;
+
+  document.getElementById('modalBg').classList.add('open');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modalBg')) {
+    document.getElementById('modalBg').classList.remove('open');
+    currentOrderRef = null;
+  }
+}
+
+async function updateStatus(ref) {
+  const status   = document.getElementById('newStatus').value;
+  const tracking = document.getElementById('trackingInput').value;
+  const carrier  = document.getElementById('carrierInput').value;
+  const note     = document.getElementById('noteInput').value;
+
+  const res = await fetch(`${API}/api/orders/${ref}/status`, {
+    method:  'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ status, trackingNumber: tracking, carrier, note })
+  });
+
+  if (res.ok) {
+    showToast(`✅ Order ${ref} updated to ${status}`);
+    closeModal();
+  } else {
+    showToast('❌ Error updating order');
+  }
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== PAGE SWITCH =====
+function switchPage(page, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.page-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  btn.classList.add('active');
+  if (page === 'products') fetchProductsCRM();
+}
+
+// ===== PRODUCTS CRM =====
+let allProducts = [];
+
+async function fetchProductsCRM() {
+  const res = await fetch(`${API}/api/products/all`);
+  allProducts = await res.json();
+  renderProductsCRM();
+}
+
+function renderProductsCRM() {
+  const grid = document.getElementById('productsGridCrm');
+  if (!allProducts.length) {
+    grid.innerHTML = '<p style="color:var(--text-light);padding:40px;">No products yet. Click + Add Product.</p>';
+    return;
+  }
+  grid.innerHTML = allProducts.map(p => `
+    <div class="product-card-crm">
+      <img src="${p.img || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${p.name}"
+           onerror="this.src='https://via.placeholder.com/300x200?text=No+Image'"/>
+      ${!p.active ? '<div class="inactive-overlay">Hidden</div>' : ''}
+      <div class="info">
+        <div class="pcat">${p.category === 'clothing' ? 'Clothing' : 'Home'}
+          ${p.badge ? `<span class="badge-crm">${p.badge}</span>` : ''}
+        </div>
+        <div class="pname">${p.name}</div>
+        <div class="pprice">$${parseFloat(p.price).toFixed(2)}</div>
+        <div class="pactions">
+          <button class="btn-edit-p" onclick="openProductForm('${p.id}')">✏️ Edit</button>
+          <button class="btn-del-p"  onclick="deleteProduct('${p.id}')">🗑️</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function openProductForm(id) {
+  const isEdit = !!id;
+  document.getElementById('productModalTitle').textContent = isEdit ? 'Edit Product' : 'Add Product';
+  document.getElementById('editProductId').value = id || '';
+  document.getElementById('productSaveBtn').textContent = isEdit ? 'Update Product' : 'Add Product';
+
+  if (isEdit) {
+    const p = allProducts.find(x => x.id === id);
+    if (!p) return;
+    document.getElementById('pName').value     = p.name;
+    document.getElementById('pPrice').value    = p.price;
+    document.getElementById('pCategory').value = p.category;
+    document.getElementById('pBadge').value    = p.badge || '';
+    document.getElementById('pImg').value      = p.img || '';
+    document.getElementById('pActive').value   = String(p.active !== false);
+    const prev = document.getElementById('imgPreview');
+    if (p.img) { prev.src = p.img; prev.style.display = 'block'; }
+    else prev.style.display = 'none';
+  } else {
+    document.getElementById('pName').value     = '';
+    document.getElementById('pPrice').value    = '';
+    document.getElementById('pCategory').value = 'clothing';
+    document.getElementById('pBadge').value    = '';
+    document.getElementById('pImg').value      = '';
+    document.getElementById('pActive').value   = 'true';
+    document.getElementById('imgPreview').style.display = 'none';
+  }
+  document.getElementById('productModalBg').classList.add('open');
+}
+
+function closeProductModal(e) {
+  if (!e || e.target === document.getElementById('productModalBg'))
+    document.getElementById('productModalBg').classList.remove('open');
+}
+
+function previewImg(input) {
+  const prev = document.getElementById('imgPreview');
+  if (input.value) { prev.src = input.value; prev.style.display = 'block'; }
+  else prev.style.display = 'none';
+}
+
+async function saveProduct(e) {
+  e.preventDefault();
+  const id   = document.getElementById('editProductId').value;
+  const body = {
+    name:     document.getElementById('pName').value,
+    price:    parseFloat(document.getElementById('pPrice').value),
+    category: document.getElementById('pCategory').value,
+    badge:    document.getElementById('pBadge').value || null,
+    img:      document.getElementById('pImg').value,
+    active:   document.getElementById('pActive').value === 'true'
+  };
+  const url    = id ? `${API}/api/products/${id}` : `${API}/api/products`;
+  const method = id ? 'PUT' : 'POST';
+  const res    = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (res.ok) {
+    closeProductModal();
+    fetchProductsCRM();
+    showToast(id ? `✅ "${body.name}" updated` : `✅ "${body.name}" added`);
+  } else {
+    showToast('❌ Error saving product');
+  }
+}
+
+async function deleteProduct(id) {
+  const p = allProducts.find(x => x.id === id);
+  if (!confirm(`Delete "${p?.name}"? This cannot be undone.`)) return;
+  const res = await fetch(`${API}/api/products/${id}`, { method: 'DELETE' });
+  if (res.ok) { fetchProductsCRM(); showToast('🗑️ Product deleted'); }
+  else showToast('❌ Error deleting product');
+}
+
+// ===== INIT =====
+fetchOrders();
+fetchStats();
+connectSSE();
+</script>
+</body>
+</html>

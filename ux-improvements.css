@@ -1,0 +1,213 @@
+/* ═══════════════════════════════════════════════════════
+   JAWDA — UX Improvements
+   Source: ui-ux-pro-max audit + design system
+   Fixes: cursor, focus, touch, transitions, a11y, motion
+═══════════════════════════════════════════════════════ */
+
+/* ── 1. CURSOR POINTER on all interactive elements ─── */
+a, button, [role="button"],
+.product-card, .cat-card, .ftab,
+.pm-tab, .pc-add, .cart-trigger,
+.nav-cart-btn, .ci-remove, .co-close,
+.co-back, .btn-co, .btn-primary,
+.btn-outline, .btn-outline-sm,
+.has-dropdown > a,
+input[type="submit"],
+input[type="button"],
+label[for] { cursor: pointer; }
+
+/* ── 2. FOCUS VISIBLE rings (keyboard nav) ─────────── */
+:focus { outline: none; }
+:focus-visible {
+  outline: 2px solid var(--brown);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--brown);
+  outline-offset: 2px;
+}
+
+/* ── 3. TOUCH TARGETS — min 44x44px ─────────────────── */
+.pm-tab { min-height: 44px; }
+.pc-add { min-height: 44px; padding: 10px 16px; }
+.cart-trigger { min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+.ci-remove { min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+.filter-tabs { gap: 10px; }
+.ftab { min-height: 40px; padding: 9px 20px; }
+
+/* ── 4. SMOOTH TRANSITIONS 150-300ms ────────────────── */
+a, button, .product-card, .pc-add,
+.pm-tab, .ftab, .btn-primary, .btn-outline,
+.cart-trigger, .nav-cart-btn {
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── 5. PRODUCT CARD micro-interactions ─────────────── */
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 16px 40px rgba(58,46,34,.15);
+}
+.product-card:active { transform: translateY(-2px); }
+.pc-add:hover { background: var(--brown); transform: none; }
+.pc-add:active { transform: scale(0.97); }
+
+/* ── 6. LOADING SKELETON for products ───────────────── */
+.skeleton {
+  background: linear-gradient(90deg, #e8e0d5 25%, #f0e8df 50%, #e8e0d5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.product-card.loading .pc-img  { background: none; }
+.product-card.loading .pc-img::after {
+  content: '';
+  display: block;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, #e8e0d5 25%, #f0e8df 50%, #e8e0d5 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* ── 7. PREFERS-REDUCED-MOTION ──────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+  .ticker-track { animation: none; }
+  .product-card:hover { transform: none; }
+}
+
+/* ── 8. MOBILE HAMBURGER NAV ────────────────────────── */
+.hamburger-btn {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.hamburger-btn span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--brown-dark);
+  border-radius: 2px;
+  transition: all 250ms ease;
+}
+.hamburger-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger-btn.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.hamburger-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Mobile nav drawer */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: var(--white);
+  z-index: 950;
+  padding: 80px 32px 32px;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+  animation: slideInLeft 250ms ease;
+}
+@keyframes slideInLeft { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+.mobile-nav.open { display: flex; }
+.mobile-nav a {
+  font-size: 1.3rem;
+  font-family: var(--font-serif);
+  color: var(--brown-dark);
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+  letter-spacing: .08em;
+}
+.mobile-nav-close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  font-size: 1.4rem;
+  color: var(--brown);
+  background: none;
+  border: none;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .hamburger-btn { display: flex; }
+  .header-nav > ul { display: none; }
+}
+
+/* ── 9. FONT DISPLAY SWAP (perf) ────────────────────── */
+/* Applied via Google Fonts URL param &display=swap — already in HTML */
+
+/* ── 10. FORM ACCESSIBILITY ─────────────────────────── */
+.co-field input::placeholder,
+.co-field select,
+.co-field textarea::placeholder { color: var(--text-md); opacity: .6; }
+
+.co-field input:invalid:not(:placeholder-shown),
+.co-field input:user-invalid {
+  border-color: #c0392b;
+  box-shadow: 0 0 0 3px rgba(192,57,43,.1);
+}
+
+/* ── 11. IMAGE LAZY LOADING fade-in ─────────────────── */
+img[loading="lazy"] { opacity: 0; transition: opacity 400ms ease; }
+img[loading="lazy"].loaded { opacity: 1; }
+
+/* ── 12. CART BADGE animation ───────────────────────── */
+#cartBadge.bump {
+  animation: cartBump 300ms cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+@keyframes cartBump {
+  0%,100% { transform: scale(1); }
+  40%      { transform: scale(1.4); }
+  60%      { transform: scale(0.9); }
+}
+
+/* ── 13. BUTTON LOADING STATE ───────────────────────── */
+.btn-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+.btn-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 18px; height: 18px;
+  margin: -9px 0 0 -9px;
+  border: 2px solid rgba(255,255,255,.4);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 600ms linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── 14. TOAST improvement ──────────────────────────── */
+.toast { max-width: 90vw; word-break: break-word; }
+
+/* ── 15. CHECKOUT accessibility ─────────────────────── */
+.co-overlay[aria-modal="true"] { }
+.co-step label { font-weight: 500; }
+.co-field input:required + span::after { content: " *"; color: #c0392b; font-size: .75rem; }

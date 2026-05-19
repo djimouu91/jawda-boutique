@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>JAWDA — Clothing & Home Accessories</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="ux-improvements.css"/>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg"/>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════
+     ANNOUNCEMENT TICKER
+════════════════════════════════════════ -->
+<div class="ticker-bar">
+  <div class="ticker-track">
+    <span>NEW SUMMER COLLECTION 2025</span>
+    <span class="sep">✦</span>
+    <span>FREE SHIPPING ON ORDERS OVER $75</span>
+    <span class="sep">✦</span>
+    <span>UP TO 40% OFF — SALE NOW ON</span>
+    <span class="sep">✦</span>
+    <span>NEW SUMMER COLLECTION 2025</span>
+    <span class="sep">✦</span>
+    <span>FREE SHIPPING ON ORDERS OVER $75</span>
+    <span class="sep">✦</span>
+    <span>UP TO 40% OFF — SALE NOW ON</span>
+    <span class="sep">✦</span>
+    <span>NEW SUMMER COLLECTION 2025</span>
+    <span class="sep">✦</span>
+    <span>FREE SHIPPING ON ORDERS OVER $75</span>
+    <span class="sep">✦</span>
+    <span>UP TO 40% OFF — SALE NOW ON</span>
+    <span class="sep">✦</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HEADER
+════════════════════════════════════════ -->
+<header id="site-header">
+  <!-- Top utility bar -->
+  <div class="header-top">
+    <div class="header-container">
+      <div class="header-top-left">
+        <a href="#">Free Shipping Over $75</a>
+        <span>·</span>
+        <a href="#">30-Day Returns</a>
+      </div>
+      <div class="header-top-right">
+        <a href="#" class="icon-link" title="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </a>
+        <a href="#" class="icon-link" title="Account">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+        <button class="icon-link cart-trigger" onclick="toggleCart()" title="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="cart-badge" id="cartBadge" style="display:none">0</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Logo -->
+  <div class="header-logo-wrap">
+    <div class="header-container">
+      <a href="#" class="site-logo">
+        <img src="logo.svg" alt="JAWDA" class="header-logo-img"/>
+      </a>
+    </div>
+  </div>
+
+  <!-- Main Navigation -->
+  <nav class="main-nav">
+    <div class="header-container">
+      <ul class="nav-list">
+        <li><a href="#" class="nav-link">Home</a></li>
+        <li class="has-dropdown">
+          <a href="#shop" class="nav-link">Collections <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg></a>
+          <div class="dropdown">
+            <div class="dropdown-inner">
+              <div class="dropdown-col">
+                <h4>Clothing</h4>
+                <a href="#" onclick="filterProducts('clothing',event)">All Clothing</a>
+                <a href="#">Blouses & Tops</a>
+                <a href="#">Dresses</a>
+                <a href="#">Skirts</a>
+                <a href="#">Jackets & Blazers</a>
+              </div>
+              <div class="dropdown-col">
+                <h4>Home</h4>
+                <a href="#" onclick="filterProducts('home',event)">All Home</a>
+                <a href="#">Vases & Decor</a>
+                <a href="#">Candles</a>
+                <a href="#">Throws & Cushions</a>
+                <a href="#">Storage</a>
+              </div>
+              <div class="dropdown-col">
+                <h4>Shop By</h4>
+                <a href="#" onclick="filterProducts('sale',event)">Sale</a>
+                <a href="#" onclick="filterProducts('new',event)">New Arrivals</a>
+                <a href="#">Best Sellers</a>
+                <a href="#">Gift Ideas</a>
+              </div>
+            </div>
+          </div>
+        </li>
+        <li><a href="#" class="nav-link">Track Order</a></li>
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+</header>
+
+<!-- ═══════════════════════════════════════
+     CART DRAWER
+════════════════════════════════════════ -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="drawer-header">
+    <h3>Your Bag (<span id="cartItemCount">0</span>)</h3>
+    <button class="drawer-close" onclick="toggleCart()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="cartItems">
+    <div class="empty-bag">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      <p>Your bag is empty</p>
+      <a href="#shop" class="btn-outline-sm" onclick="toggleCart()">Start Shopping</a>
+    </div>
+  </div>
+  <div class="drawer-footer" id="cartFooter" style="display:none">
+    <div class="cart-subtotal">
+      <span>Subtotal</span>
+      <span>$<span id="cartTotal">0.00</span></span>
+    </div>
+    <p class="cart-note">Shipping & taxes calculated at checkout</p>
+    <button class="btn-checkout" onclick="openCheckout()">Checkout</button>
+    <button class="btn-continue" onclick="toggleCart()">Continue Shopping</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     HERO
+════════════════════════════════════════ -->
+<section class="hero" id="home">
+  <div class="hero-media">
+    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1600&q=85" alt="JAWDA Collection" class="hero-img"/>
+    <div class="hero-overlay"></div>
+  </div>
+  <div class="hero-content">
+    <p class="hero-eyebrow">Ottawa Boutique Est. 2025</p>
+    <h1 class="hero-title">Style designed<br/><em>to feel right</em><br/>all day.</h1>
+    <p class="hero-sub">Trusted by thousands across Canada</p>
+    <div class="hero-actions">
+      <a href="#shop" class="btn-hero-primary">Shop New Collection</a>
+      <a href="#shop" class="btn-hero-ghost">View Sale</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     TRUST BAR
+════════════════════════════════════════ -->
+<div class="trust-bar">
+  <div class="trust-container">
+    <div class="trust-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      <div><strong>Free Shipping</strong><span>Orders over $75</span></div>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <div><strong>Easy Returns</strong><span>30-day guarantee</span></div>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <div><strong>Secure Payment</strong><span>Stripe & PayPal</span></div>
+    </div>
+    <div class="trust-divider"></div>
+    <div class="trust-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <div><strong>Quality Assured</strong><span>Handpicked pieces</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     CATEGORY BANNERS
+════════════════════════════════════════ -->
+<section class="cat-section">
+  <div class="cat-container">
+    <div class="cat-banner" onclick="filterAndScroll('clothing')">
+      <img src="https://images.unsplash.com/photo-1523381210434-271e8be1f52b?w=800&q=80" alt="Clothing"/>
+      <div class="cat-banner-overlay">
+        <h2>Clothing</h2>
+        <span>Explore Collection →</span>
+      </div>
+    </div>
+    <div class="cat-banner cat-banner-tall" onclick="filterAndScroll('home')">
+      <img src="https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=800&q=80" alt="Home"/>
+      <div class="cat-banner-overlay">
+        <h2>Home Accessories</h2>
+        <span>Explore Collection →</span>
+      </div>
+    </div>
+    <div class="cat-banner" onclick="filterAndScroll('new')">
+      <img src="https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=800&q=80" alt="New Arrivals"/>
+      <div class="cat-banner-overlay">
+        <h2>New Arrivals</h2>
+        <span>Shop Now →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SHOP
+════════════════════════════════════════ -->
+<section class="shop-section" id="shop">
+  <div class="shop-container">
+    <div class="shop-header">
+      <div>
+        <h2 class="section-title">Our Collection</h2>
+        <p class="section-sub">Handpicked pieces crafted for those who appreciate timeless style</p>
+      </div>
+      <div class="filter-tabs" id="filterTabs">
+        <button class="ftab active" data-cat="all"        onclick="filterProducts('all',event,this)">All</button>
+        <button class="ftab"        data-cat="clothing"   onclick="filterProducts('clothing',event,this)">Clothing</button>
+        <button class="ftab"        data-cat="home"       onclick="filterProducts('home',event,this)">Home</button>
+        <button class="ftab"        data-cat="sale"       onclick="filterProducts('sale',event,this)">Sale</button>
+        <button class="ftab"        data-cat="new"        onclick="filterProducts('new',event,this)">New In</button>
+      </div>
+    </div>
+    <div class="products-grid" id="productsGrid"></div>
+    <div class="load-more-wrap">
+      <button class="btn-load-more">Load More</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     EDITORIAL STRIP
+════════════════════════════════════════ -->
+<section class="editorial">
+  <div class="editorial-inner">
+    <div class="editorial-text">
+      <span class="editorial-eyebrow">Our Philosophy</span>
+      <h2>Quality should feel as<br/><em>lovely</em> as it looks.</h2>
+      <p>At JAWDA — meaning <strong>quality</strong> in Arabic — every piece is selected with intention. We believe clothing and home accessories should bring quiet joy to your everyday life, not just fill a wardrobe or a shelf.</p>
+      <p>Founded in Ottawa, rooted in the belief that beautiful things deserve to last.</p>
+      <a href="#about" class="btn-dark">Our Story</a>
+    </div>
+    <div class="editorial-img-wrap">
+      <img src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=700&q=80" alt="JAWDA Story"/>
+      <div class="editorial-tag">Est. 2025 · Ottawa</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     TESTIMONIALS
+════════════════════════════════════════ -->
+<section class="reviews-section">
+  <div class="shop-container">
+    <div class="reviews-header">
+      <div class="stars-big">★★★★★</div>
+      <h2 class="section-title">What our customers say</h2>
+      <p class="section-sub">Over 500 happy customers across Canada</p>
+    </div>
+    <div class="reviews-grid">
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p>"The quality is absolutely outstanding. My linen dress has been worn so many times and still looks brand new. Truly worth every penny."</p>
+        <div class="review-author">— Sarah M., Toronto</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p>"I ordered the ceramic vase set for my living room and it exceeded all expectations. The packaging was also beautiful — perfect as a gift."</p>
+        <div class="review-author">— Nadia K., Montreal</div>
+      </div>
+      <div class="review-card">
+        <div class="review-stars">★★★★★</div>
+        <p>"Fast shipping, beautiful pieces, and the customer service was exceptional when I had a question. JAWDA is my new favourite boutique."</p>
+        <div class="review-author">— Leila B., Ottawa</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     NEWSLETTER
+════════════════════════════════════════ -->
+<section class="newsletter-section">
+  <div class="newsletter-inner">
+    <div class="newsletter-text">
+      <h2>Join the JAWDA circle</h2>
+      <p>Be the first to know about new arrivals, exclusive offers, and styling inspiration.</p>
+    </div>
+    <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+      <input type="email" placeholder="Your email address" required/>
+      <button type="submit">Subscribe</button>
+    </form>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     ABOUT
+════════════════════════════════════════ -->
+<section class="about-section" id="about">
+  <div class="shop-container">
+    <div class="about-grid">
+      <div class="about-value">
+        <span class="about-icon">✦</span>
+        <h3>Curated Quality</h3>
+        <p>Every item hand-selected for exceptional craftsmanship and lasting beauty.</p>
+      </div>
+      <div class="about-value">
+        <span class="about-icon">✦</span>
+        <h3>Timeless Style</h3>
+        <p>Pieces that transcend trends — for a wardrobe and home you'll love for years.</p>
+      </div>
+      <div class="about-value">
+        <span class="about-icon">✦</span>
+        <h3>Mindful Sourcing</h3>
+        <p>We work with suppliers who share our values of quality and responsible production.</p>
+      </div>
+      <div class="about-value">
+        <span class="about-icon">✦</span>
+        <h3>Personal Service</h3>
+        <p>Real humans who care. Reach us by email or WhatsApp — always happy to help.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     CONTACT
+════════════════════════════════════════ -->
+<section class="contact-section" id="contact">
+  <div class="contact-inner">
+    <div class="contact-text">
+      <h2>Get in touch</h2>
+      <p>Questions about sizing, delivery, or a product? We're here to help.</p>
+      <div class="contact-links">
+        <a href="mailto:hello@jawda.ca">hello@jawda.ca</a>
+        <a href="#">WhatsApp Us</a>
+      </div>
+    </div>
+    <form class="contact-form-new" onsubmit="submitContact(event)">
+      <div class="cf-row">
+        <div class="cf-field">
+          <label>First Name</label>
+          <input type="text" placeholder="Jane" required/>
+        </div>
+        <div class="cf-field">
+          <label>Last Name</label>
+          <input type="text" placeholder="Doe" required/>
+        </div>
+      </div>
+      <div class="cf-field">
+        <label>Email</label>
+        <input type="email" placeholder="jane@example.com" required/>
+      </div>
+      <div class="cf-field">
+        <label>Message</label>
+        <textarea rows="4" placeholder="How can we help you?" required></textarea>
+      </div>
+      <button type="submit" class="btn-dark">Send Message</button>
+    </form>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     FOOTER
+════════════════════════════════════════ -->
+<footer class="site-footer">
+  <div class="footer-top-strip"></div>
+  <div class="footer-main">
+    <div class="footer-brand-col">
+      <div class="footer-logo">JAWDA</div>
+      <p>Quality in every detail.<br/>Ottawa, Canada · Est. 2025</p>
+      <div class="footer-socials">
+        <a href="#" aria-label="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="#" aria-label="Facebook">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="#" aria-label="Pinterest">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 2C6.48 2 2 6.48 2 12c0 4.24 2.65 7.86 6.39 9.29-.09-.78-.17-1.98.04-2.83.18-.76 1.22-5.17 1.22-5.17s-.31-.62-.31-1.54c0-1.45.84-2.53 1.88-2.53.89 0 1.32.67 1.32 1.47 0 .9-.57 2.24-.87 3.48-.25 1.04.52 1.88 1.54 1.88 1.85 0 3.08-2.37 3.08-5.18 0-2.14-1.44-3.75-4.04-3.75-2.94 0-4.77 2.2-4.77 4.65 0 .84.24 1.44.62 1.9.17.21.19.29.13.53-.04.17-.14.58-.18.74-.06.24-.24.32-.44.24-1.24-.51-1.82-1.88-1.82-3.41 0-2.52 2.12-5.54 6.33-5.54 3.39 0 5.63 2.45 5.63 5.08 0 3.48-1.94 6.08-4.78 6.08-1.01 0-1.95-.55-2.27-1.17l-.62 2.38c-.22.86-.82 1.94-1.22 2.59.92.28 1.9.43 2.91.43 5.52 0 10-4.48 10-10S17.52 2 12 2z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-nav-col">
+      <h4>Shop</h4>
+      <a href="#" onclick="filterAndScroll('clothing')">Clothing</a>
+      <a href="#" onclick="filterAndScroll('home')">Home Accessories</a>
+      <a href="#" onclick="filterAndScroll('new')">New Arrivals</a>
+      <a href="#" onclick="filterAndScroll('sale')">Sale</a>
+    </div>
+    <div class="footer-nav-col">
+      <h4>Customer Service</h4>
+      <a href="#">Track Your Order</a>
+      <a href="#">Shipping & Delivery</a>
+      <a href="#">Returns & Exchanges</a>
+      <a href="#">Size Guide</a>
+      <a href="#">FAQ</a>
+    </div>
+    <div class="footer-nav-col">
+      <h4>Information</h4>
+      <a href="#about">About JAWDA</a>
+      <a href="#contact">Contact Us</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Terms & Conditions</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 JAWDA Boutique. All rights reserved.</p>
+    <div class="footer-pay-icons">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/80px-Visa_Inc._logo.svg.png" alt="Visa"/>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/80px-Mastercard-logo.svg.png" alt="Mastercard"/>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/80px-PayPal.svg.png" alt="PayPal"/>
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Stripe_Logo%2C_revised_2016.svg/80px-Stripe_Logo%2C_revised_2016.svg.png" alt="Stripe"/>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════
+     CHECKOUT MODAL
+════════════════════════════════════════ -->
+<div class="modal-bg" id="checkoutOverlay" onclick="closeCheckout(event)">
+  <div class="checkout-modal" id="checkoutModal">
+    <button class="modal-close-x" onclick="closeCheckout()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <!-- Step 1 -->
+    <div class="co-step" id="co-step1">
+      <div class="co-left">
+        <div class="co-brand">JAWDA</div>
+        <h2>Checkout</h2>
+        <div class="co-summary" id="coSummary"></div>
+        <div class="co-total-line"><span>Total</span><span id="coTotal">$0.00</span></div>
+        <div class="co-secure">🔒 Secure SSL checkout</div>
+      </div>
+      <div class="co-right">
+        <h3>Shipping Details</h3>
+        <form onsubmit="goStep2(event)">
+          <div class="co-row">
+            <div class="co-field"><label>First Name</label><input type="text" id="fn" required placeholder="Jane"/></div>
+            <div class="co-field"><label>Last Name</label><input type="text" id="ln" required placeholder="Doe"/></div>
+          </div>
+          <div class="co-field"><label>Email</label><input type="email" id="em" required placeholder="jane@example.com"/></div>
+          <div class="co-field"><label>Phone</label><input type="tel" id="ph" placeholder="+1 (555) 000-0000"/></div>
+          <div class="co-field"><label>Address</label><input type="text" id="addr" required placeholder="123 Main St"/></div>
+          <div class="co-row">
+            <div class="co-field"><label>City</label><input type="text" id="city" required placeholder="Ottawa"/></div>
+            <div class="co-field"><label>ZIP / Postal</label><input type="text" id="zip" required placeholder="K1A 0A9"/></div>
+          </div>
+          <div class="co-field">
+            <label>Country</label>
+            <select id="country" required>
+              <option value="">Select country...</option>
+              <option value="CA">Canada</option>
+              <option value="US">United States</option>
+              <option value="GB">United Kingdom</option>
+              <option value="FR">France</option>
+              <option value="DZ">Algeria</option>
+              <option value="MA">Morocco</option>
+              <option value="TN">Tunisia</option>
+              <option value="AE">UAE</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-co">Continue to Payment →</button>
+        </form>
+      </div>
+    </div>
+    <!-- Step 2 -->
+    <div class="co-step hidden" id="co-step2">
+      <div class="co-left">
+        <div class="co-brand">JAWDA</div>
+        <h2>Payment</h2>
+        <div class="co-summary" id="coSummary2"></div>
+        <div class="co-total-line"><span>Total</span><span id="coTotal2">$0.00</span></div>
+        <div class="co-pay-logos">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/80px-Visa_Inc._logo.svg.png" alt="Visa"/>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/80px-Mastercard-logo.svg.png" alt="MC"/>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b5/PayPal.svg/80px-PayPal.svg.png" alt="PayPal"/>
+        </div>
+      </div>
+      <div class="co-right">
+        <button class="co-back" onclick="showStep(1)">← Back</button>
+        <h3>Payment Method</h3>
+        <div class="pay-method-tabs">
+          <button class="pm-tab active" onclick="switchPM('card',this)">💳 Card</button>
+          <button class="pm-tab" onclick="switchPM('paypal',this)">PayPal</button>
+          <button class="pm-tab" onclick="switchPM('interac',this)">Interac</button>
+        </div>
+        <div id="pm-card">
+          <!-- Stripe live mount -->
+          <div id="stripe-card-mount" style="border:1px solid #ddd0c0;border-radius:8px;padding:14px;margin-bottom:14px;background:#fff;min-height:44px;"></div>
+          <!-- Demo fields shown when Stripe not configured -->
+          <div id="demo-card-fields">
+            <div class="co-field"><label>Cardholder Name</label><input type="text" id="cName" placeholder="Jane Doe"/></div>
+            <div class="co-field"><label>Card Number</label><input type="text" placeholder="4242 4242 4242 4242" maxlength="19" oninput="fmtCard(this)"/></div>
+            <div class="co-row">
+              <div class="co-field"><label>Expiry</label><input type="text" placeholder="MM / YY" maxlength="7" oninput="fmtExpiry(this)"/></div>
+              <div class="co-field"><label>CVV</label><input type="text" placeholder="123" maxlength="4"/></div>
+            </div>
+          </div>
+          <div class="co-secure">🔒 Secured by Stripe · 256-bit SSL</div>
+          <button class="btn-co btn-co-full" onclick="processPayment()">Pay CA$<span id="payAmount">0.00</span></button>
+        </div>
+        <div id="pm-paypal" class="hidden">
+          <p class="paypal-msg">You'll be redirected to PayPal to complete your purchase securely.</p>
+          <div id="paypal-button-container"></div>
+        </div>
+        <div id="pm-interac" class="hidden">
+          <div style="background:#faf8f5;border:1px solid #ddd0c0;border-radius:10px;padding:20px;text-align:center;margin:12px 0;">
+            <p style="font-weight:600;color:#3b2314;margin-bottom:8px;">Pay with Interac e-Transfer</p>
+            <p style="font-size:.86rem;color:#8a7060;line-height:1.7;">Send your payment to <strong>hello@jawda.ca</strong><br/>
+            Include your order reference in the message.<br/>
+            Orders are confirmed after payment is received.</p>
+          </div>
+          <button class="btn-co btn-co-full" onclick="processInterac()">Confirm Interac Order</button>
+        </div>
+      </div>
+    </div>
+    <!-- Step 3: Success -->
+    <div class="co-step hidden" id="co-step3">
+      <div class="co-success">
+        <div class="success-circle">✓</div>
+        <h2>Order Confirmed!</h2>
+        <p>Thank you for shopping with JAWDA.<br/>A confirmation has been sent to <strong id="successEmail"></strong>.</p>
+        <p class="order-ref-tag">Order ref: <strong id="successRef"></strong></p>
+        <button class="btn-co" onclick="closeCheckout();resetCart()">Continue Shopping</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://js.stripe.com/v3/" defer></script>
+<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID&currency=CAD&components=buttons" id="paypal-sdk" defer></script>
+<script src="app.js"></script>
+<script src="checkout.js"></script>
+<script src="mobile-nav.js"></script>
+</body>
+</html>

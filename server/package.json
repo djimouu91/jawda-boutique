@@ -1,0 +1,26 @@
+{
+  "name": "jawda-server",
+  "version": "1.0.0",
+  "description": "JAWDA boutique — backend + frontend",
+  "main": "server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "stripe": "^16.2.0",
+    "nodemailer": "^6.9.14",
+    "twilio": "^5.3.3",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
+  }
+}
