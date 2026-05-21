@@ -16,100 +16,132 @@ const FALLBACK_PRODUCTS = [
   {
     id:'1', category:'clothing',
     name:'Linen Midi Wrap Dress',
-    desc:'Viral TikTok winner — breathable linen, flattering wrap cut. 4.8★ 2,300+ sold.',
-    price:89,  orig:159, badge:'Best Seller',
+    desc:'Breathable linen, universally flattering wrap silhouette. Available in 6 neutral tones. Machine washable.',
+    price:89, orig:159, badge:'Best Seller',
     img:'https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=600&q=80',
-    angle:'#1 dress on TikTok Canada — "feels like wearing air"'
+    angle:'#1 TikTok Canada — "feels like wearing air"'
   },
   {
     id:'2', category:'clothing',
     name:'Oversized Cashmere-Feel Cardigan',
-    desc:'Facebook ads winner — luxurious softness at accessible price. Ships Canada-wide.',
-    price:79,  orig:139, badge:'New',
+    desc:'Cloud-soft premium knit, oversized relaxed fit. The ultimate Canadian winter essential. One size fits most.',
+    price:79, orig:139, badge:'New',
     img:'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=600&q=80',
-    angle:'Canadian winters essential — trending on Meta ads Q4'
+    angle:'Winter hero — "softer than my actual cashmere"'
   },
   {
     id:'3', category:'clothing',
     name:'Flowy Chiffon Maxi Dress',
-    desc:'Summer viral product — lightweight, elegant, perfect for events & everyday.',
-    price:75,  orig:129, badge:'Sale',
+    desc:'Lightweight, elegant drape — from beach to dinner in seconds. Adjustable tie waist, side slit. Free shipping.',
+    price:75, orig:129, badge:'Sale',
     img:'https://images.unsplash.com/photo-1572804013309-59a88b7e92f1?w=600&q=80',
-    angle:'Summer hero — viral reel "beach to dinner" hook'
+    angle:'Summer viral — "beach to dinner" reel hook'
   },
   {
     id:'4', category:'clothing',
     name:'Wide-Leg Linen Trousers',
-    desc:'Minimalist aesthetic winner — pairs with everything, all-day comfort.',
-    price:65,  orig:110, badge:'New',
+    desc:'Effortless quiet luxury. Breathable linen-blend, tailored wide leg, elastic waist. Available sizes XS–XL.',
+    price:65, orig:110, badge:'New',
     img:'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=600&q=80',
-    angle:'Pinterest & TikTok "quiet luxury" aesthetic — high ROAS'
+    angle:'"Quiet luxury" Pinterest winner — high ROAS 4.1x'
   },
   {
     id:'5', category:'clothing',
     name:'Silk-Look Slip Dress',
-    desc:'High-margin winner — satin finish, elegant drape. Facebook ads ROAS 3.8x.',
-    price:68,  orig:115, badge:'Best Seller',
+    desc:'Liquid-drape satin finish, adjustable straps, bias cut. Wear alone or layered. 5 colours. Free returns.',
+    price:68, orig:115, badge:'Best Seller',
     img:'https://images.unsplash.com/photo-1594938298603-c8148c4b7c1c?w=600&q=80',
     angle:'Luxury feel, accessible price — converts at 4.2%'
   },
   {
     id:'6', category:'clothing',
     name:'Broderie Anglaise Blouse',
-    desc:'Timeless summer piece — bohemian elegance with modern silhouette.',
-    price:55,  orig:95, badge:'Sale',
+    desc:'Handcrafted eyelet embroidery, relaxed fit, V-neck with tie detail. The bohemian essential of summer 2026.',
+    price:55, orig:95, badge:'Sale',
     img:'https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=600&q=80',
-    angle:'UGC winner — "looks 10x more expensive" hook'
+    angle:'"Looks 10x more expensive" — top UGC hook'
+  },
+  {
+    id:'13', category:'clothing',
+    name:'Oversized Teddy Shearling Coat',
+    desc:'Ultra-plush sherpa coat, street-style statement. Drop shoulder, double-breasted. The viral winter coat of 2026.',
+    price:115, orig:189, badge:'Hot 🔥',
+    img:'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&q=80',
+    angle:'Winter TikTok hero — "warm AND stylish" viral hook'
+  },
+  {
+    id:'14', category:'clothing',
+    name:'Linen Co-ord Set (Top + Wide Pants)',
+    desc:'Matching linen set: cropped tie-front top + wide-leg pants. Effortless summer outfit, mix & match pieces.',
+    price:92, orig:148, badge:'New',
+    img:'https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=600&q=80',
+    angle:'Matching sets trending hard — "two outfits in one" hook'
+  },
+  {
+    id:'15', category:'clothing',
+    name:'Minimal Crossbody Leather Bag',
+    desc:'Genuine PU leather, gold hardware, adjustable strap. Fits phone + wallet + essentials. The everyday bag.',
+    price:58, orig:98, badge:'New',
+    img:'https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80',
+    angle:'Accessories upsell winner — AOV booster +$58'
   },
 
   // ── HOME WINNERS ──────────────────────────────────────────────────────────
   {
     id:'7', category:'home',
     name:'Aesthetic Ceramic Vase Set (3pc)',
-    desc:'TikTok viral home decor — BookTok & apartment aesthetic. 5★ 1,800+ sold.',
-    price:68,  orig:115, badge:'Best Seller',
+    desc:'Three sculptural matte ceramic vases in graduated sizes. Neutral earth tones. Perfect apartment decor.',
+    price:68, orig:115, badge:'Best Seller',
     img:'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=600&q=80',
-    angle:'"Transform your shelf in 30 seconds" — viral reel 2.1M views'
+    angle:'"Transform your shelf in 30s" — 2.1M TikTok views'
   },
   {
     id:'8', category:'home',
-    name:'Luxury Scented Candle Set',
-    desc:'High-margin repeat purchase — premium fragrance, gift-ready packaging.',
-    price:55,  orig:90, badge:'New',
+    name:'Luxury Soy Candle Set (4pc)',
+    desc:'Hand-poured soy wax, premium fragrance oils. Scents: Amber & Sandalwood, Linen & Cedar, Rose & Oud, Vanilla.',
+    price:55, orig:90, badge:'New',
     img:'https://images.unsplash.com/photo-1602607196742-5525e7b7499e?w=600&q=80',
-    angle:'65% margin — top gifting product on Facebook Canada'
+    angle:'65% margin — top gifting product Canada 2026'
   },
   {
     id:'9', category:'home',
-    name:'Woven Rattan Wall Mirror',
-    desc:'Boho-chic statement piece — Instagram & TikTok home tour favourite.',
-    price:89,  orig:149, badge:'New',
+    name:'Woven Rattan Wall Mirror (60cm)',
+    desc:'Hand-woven natural rattan frame, 60cm diameter. Instantly elevates any room. Comes with mounting hardware.',
+    price:89, orig:149, badge:'New',
     img:'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80',
-    angle:'"Apartment transformation" — Pinterest viral, 3.5x ROAS'
+    angle:'"Apartment transformation" — Pinterest viral 3.5x ROAS'
   },
   {
     id:'10', category:'home',
-    name:'Linen Cushion Cover Set (4pc)',
-    desc:'Minimalist home winner — natural texture, machine washable, all sizes.',
-    price:49,  orig:85, badge:'Sale',
+    name:'Stone-Washed Linen Cushion Set (4pc)',
+    desc:'Pre-washed linen covers, 45x45cm, zipper close. Set of 4 in complementary neutrals. Machine washable.',
+    price:49, orig:85, badge:'Sale',
     img:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80',
-    angle:'"Instantly elevate your sofa" — top seller on TikTok Shop'
+    angle:'"Instantly elevated my sofa" — top TikTok Shop seller'
   },
   {
     id:'11', category:'home',
     name:'Handwoven Cotton Throw Blanket',
-    desc:'Premium feel throw — top autumn/winter winner for Canadian market.',
-    price:72,  orig:120, badge:'Best Seller',
+    desc:'Generously sized 130x170cm, hand-loomed cotton. Soft fringe finish. Keeps you warm all Canadian winter.',
+    price:72, orig:120, badge:'Best Seller',
     img:'https://images.unsplash.com/photo-1584100936595-c0654b55a2e2?w=600&q=80',
-    angle:'Cozy season hero — repeat buyer rate 38%'
+    angle:'Cozy season hero — 38% repeat buyer rate'
   },
   {
     id:'12', category:'home',
     name:'Minimalist Glass Candle Holders (Set of 3)',
-    desc:'Elegant table decor — viral "dinner party setup" content. High AOV.',
-    price:42,  orig:72, badge:'Sale',
+    desc:'Ribbed borosilicate glass, 3 heights: 8cm, 12cm, 17cm. Creates instant ambiance for any occasion.',
+    price:42, orig:72, badge:'Sale',
     img:'https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=600&q=80',
-    angle:'"Fancy table for $42" — UGC hook converts at 5.1%'
+    angle:'"Fancy dinner table for $42" — 5.1% conversion rate'
+  },
+  {
+    id:'16', category:'home',
+    name:'Aesthetic Bouclé Armchair Cover',
+    desc:'Transform any plain chair into a designer piece. Stretch bouclé fabric, universal fit. Beige & ivory tones.',
+    price:62, orig:105, badge:'Hot 🔥',
+    img:'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80',
+    angle:'"$2000 chair look for $62" — viral TikTok Canada 2026'
   },
 ];
 
