@@ -314,26 +314,55 @@ async function demoPayPal() {
 
 // ── INTERAC (redirect flow) ─────────────────────────────────
 async function processInterac() {
-  if (DEMO_MODE) { await new Promise(r => setTimeout(r, 1800)); showSuccess(); return; }
-  showToast('Interac redirect will open in live mode.');
+  // Generate order reference BEFORE payment so client can include it
+  const ref = 'JWD-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const tax   = total * 0.13;
+  const ship  = total >= 75 ? 0 : 8.99;
+  const grand = (total + tax + ship).toFixed(2);
+
+  // Save order to backend
+  await saveOrder('Interac', ref);
+
+  // Show instructions with the reference number
+  const box = document.getElementById('pm-interac').querySelector('div');
+  if (box) {
+    box.innerHTML = `
+      <p style="font-weight:700;color:#3b2314;font-size:1rem;margin-bottom:10px;">✅ Order Confirmed!</p>
+      <p style="font-size:.9rem;color:#5a4535;line-height:1.8;margin-bottom:12px;">
+        Please send <strong>${CURRENCY_SYM}${grand}</strong> via Interac e-Transfer to:<br/>
+        <strong style="font-size:1rem;color:#3b2314;">djimouu91@gmail.com</strong>
+      </p>
+      <div style="background:#fff;border:2px dashed #c8a87a;border-radius:8px;padding:12px;margin:10px 0;">
+        <p style="font-size:.78rem;color:#8a7060;margin-bottom:4px;">YOUR ORDER REFERENCE</p>
+        <p style="font-size:1.3rem;font-weight:700;color:#3b2314;letter-spacing:2px;">${ref}</p>
+        <p style="font-size:.78rem;color:#8a7060;">Include this in your Interac message</p>
+      </div>
+      <p style="font-size:.8rem;color:#8a7060;">A confirmation email will be sent once payment is received.</p>`;
+  }
 }
 
 // ── SAVE ORDER ─────────────────────────────────────────────
-async function saveOrder(method) {
+async function saveOrder(method, ref) {
+  const sd = window.shippingData || {};
+  const orderRef = ref || 'JWD-' + Math.random().toString(36).substring(2, 8).toUpperCase();
   try {
     await fetch(`${BACKEND_URL}/confirm-order`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
+        ref: orderRef,
         customerData: {
-          firstName: document.getElementById('fn')?.value,
-          lastName:  document.getElementById('ln')?.value,
-          email:     document.getElementById('em')?.value,
-          phone:     document.getElementById('ph')?.value,
-          address:   document.getElementById('addr')?.value,
-          city:      document.getElementById('city')?.value,
-          zip:       document.getElementById('zip')?.value,
-          country:   document.getElementById('country')?.value || 'CA'
+          firstName: sd.firstName || document.getElementById('fn')?.value,
+          lastName:  sd.lastName  || document.getElementById('ln')?.value,
+          email:     sd.email     || document.getElementById('em')?.value,
+          phone:     sd.phone     || document.getElementById('ph')?.value,
+          address:   sd.address   || document.getElementById('addr')?.value,
+          apt:       sd.apt       || '',
+          city:      sd.city      || document.getElementById('city')?.value,
+          postal:    sd.postal    || document.getElementById('zip')?.value,
+          province:  sd.province  || document.getElementById('province')?.value,
+          country:   sd.country   || document.getElementById('country')?.value || 'CA'
         },
         items: cart,
         paymentMethod: method,
