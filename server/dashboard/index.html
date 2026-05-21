@@ -600,7 +600,9 @@ function openModal(ref) {
       <div class="detail-block"><label>Phone</label><span>${o.customer.phone || '—'}</span></div>
       <div class="detail-block"><label>Date</label><span>${date}</span></div>
       <div class="detail-block"><label>Payment</label><span>${o.paymentMethod || '—'}</span></div>
-      <div class="detail-block"><label>Shipping</label><span>${o.customer.address}, ${o.customer.city} ${o.customer.zip}, ${o.customer.country}</span></div>
+      <div class="detail-block"><label>Address</label><span>${o.customer.address}${o.customer.apt ? ', Apt '+o.customer.apt : ''}</span></div>
+      <div class="detail-block"><label>City / Province</label><span>${o.customer.city}, ${o.customer.province || ''} ${o.customer.postal || o.customer.zip || ''}</span></div>
+      <div class="detail-block"><label>Country</label><span>${o.customer.country || 'CA'}</span></div>
       ${o.trackingNumber ? `<div class="detail-block"><label>Tracking</label><span>${o.trackingNumber}${o.carrier ? ' ('+o.carrier+')' : ''}</span></div>` : ''}
     </div>
 
@@ -611,7 +613,10 @@ function openModal(ref) {
           <span>${i.name} <span style="color:var(--text-light)">×${i.qty}</span></span>
           <span>$${(i.price * i.qty).toFixed(2)}</span>
         </div>`).join('')}
-      <div class="order-total-row"><span>Total</span><span>$${total.toFixed(2)}</span></div>
+      ${o.subtotal ? `<div class="order-item-row" style="color:var(--text-light);font-size:.85rem"><span>Subtotal</span><span>$${parseFloat(o.subtotal).toFixed(2)}</span></div>` : ''}
+      ${o.shipping !== undefined ? `<div class="order-item-row" style="color:var(--text-light);font-size:.85rem"><span>Shipping</span><span>${parseFloat(o.shipping)===0 ? 'Free' : '$'+parseFloat(o.shipping).toFixed(2)}</span></div>` : ''}
+      ${o.tax ? `<div class="order-item-row" style="color:var(--text-light);font-size:.85rem"><span>Tax (HST 13%)</span><span>$${parseFloat(o.tax).toFixed(2)}</span></div>` : ''}
+      <div class="order-total-row"><span>Total (CAD)</span><span>$${o.total ? parseFloat(o.total).toFixed(2) : total.toFixed(2)}</span></div>
     </div>
 
     <div class="timeline">
