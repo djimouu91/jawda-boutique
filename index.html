@@ -459,24 +459,29 @@
           </div>
           <div class="co-field"><label>Email</label><input type="email" id="em" required placeholder="jane@example.com"/></div>
           <div class="co-field"><label>Phone</label><input type="tel" id="ph" placeholder="+1 (555) 000-0000"/></div>
-          <div class="co-field"><label>Address</label><input type="text" id="addr" required placeholder="123 Main St"/></div>
+          <div class="co-field"><label>Street Address</label><input type="text" id="addr" required placeholder="123 Main St"/></div>
+          <div class="co-field"><label>Apt / Suite / Unit <span style="font-weight:400;color:#aaa">(optional)</span></label><input type="text" id="apt" placeholder="Apt 4B"/></div>
           <div class="co-row">
             <div class="co-field"><label>City</label><input type="text" id="city" required placeholder="Ottawa"/></div>
-            <div class="co-field"><label>ZIP / Postal</label><input type="text" id="zip" required placeholder="K1A 0A9"/></div>
+            <div class="co-field"><label id="zipLabel">Postal Code</label><input type="text" id="zip" required placeholder="K1A 0A9" maxlength="10" oninput="this.value=this.value.toUpperCase()"/></div>
           </div>
-          <div class="co-field">
-            <label>Country</label>
-            <select id="country" required>
-              <option value="">Select country...</option>
-              <option value="CA">Canada</option>
-              <option value="US">United States</option>
-              <option value="GB">United Kingdom</option>
-              <option value="FR">France</option>
-              <option value="DZ">Algeria</option>
-              <option value="MA">Morocco</option>
-              <option value="TN">Tunisia</option>
-              <option value="AE">UAE</option>
-            </select>
+          <div class="co-row">
+            <div class="co-field">
+              <label id="provinceLabel">Province</label>
+              <select id="province" required></select>
+            </div>
+            <div class="co-field">
+              <label>Country</label>
+              <select id="country" required onchange="updateProvinceDropdown(this.value)">
+                <option value="CA">Canada 🇨🇦</option>
+                <option value="US">United States 🇺🇸</option>
+                <option value="DZ">Algeria</option>
+                <option value="MA">Morocco</option>
+                <option value="TN">Tunisia</option>
+                <option value="FR">France</option>
+                <option value="AE">UAE</option>
+              </select>
+            </div>
           </div>
           <button type="submit" class="btn-co">Continue to Payment →</button>
         </form>
@@ -497,6 +502,7 @@
       </div>
       <div class="co-right">
         <button class="co-back" onclick="showStep(1)">← Back</button>
+        <div id="shippingPreview" style="background:#faf8f5;border:1px solid #e0d8cc;border-radius:8px;padding:10px 14px;font-size:.82rem;color:#5a4535;margin-bottom:14px;line-height:1.6;"></div>
         <h3>Payment Method</h3>
         <div class="pay-method-tabs">
           <button class="pm-tab active" onclick="switchPM('card',this)">💳 Card</button>
