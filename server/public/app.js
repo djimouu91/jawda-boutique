@@ -12,6 +12,15 @@ let currentFilter = 'all';
 // ── PRODUCTS ──────────────────────
 // ── WINNER PRODUCTS (researched via TikTok/Facebook ads trends for Canada 2026)
 const FALLBACK_PRODUCTS = [
+  // ── TEST PRODUCT ──────────────────────────────────────────────────────────
+  {
+    id:'TEST01', category:'clothing',
+    name:'🧪 Test Product — $1 CAD',
+    desc:'This is a test product to verify the full checkout flow (cart → Stripe → PayPal → Interac). Do not purchase. Price: CA$1.00.',
+    price:1, orig:null, badge:'Test',
+    img:'https://images.unsplash.com/photo-1553456558-aff63285bdd1?w=600&q=80',
+    angle:'"Test product — verifying checkout pipeline"'
+  },
   // ── CLOTHING WINNERS ──────────────────────────────────────────────────────
   {
     id:'1', category:'clothing',
