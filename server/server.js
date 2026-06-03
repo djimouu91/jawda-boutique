@@ -36,8 +36,48 @@ app.get('/api/status', (req, res) => {
   res.json({
     status: 'JAWDA server running ✅',
     stripe: process.env.STRIPE_SECRET_KEY?.startsWith('sk_live') ? 'live' : 'test',
-    paypal: process.env.PAYPAL_MODE || 'sandbox'
+    paypal: process.env.PAYPAL_MODE || 'sandbox',
+    whatsapp: whatsapp.META_ENABLED ? 'meta_api' : 'wa_me_fallback'
   });
+});
+
+app.post('/api/whatsapp/test-owner', async (req, res) => {
+  try {
+    await whatsapp.sendOwnerTestMessage();
+    res.json({ success: true, mode: whatsapp.META_ENABLED ? 'meta_api' : 'wa_me_fallback' });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+      mode: whatsapp.META_ENABLED ? 'meta_api' : 'wa_me_fallback'
+    });
+  }
+});
+
+app.post('/api/whatsapp/test-template', async (req, res) => {
+  try {
+    await whatsapp.sendOwnerTemplateTestMessage();
+    res.json({ success: true, mode: 'meta_api_template' });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+      mode: 'meta_api_template'
+    });
+  }
+});
+
+app.post('/api/whatsapp/test-order-template', async (req, res) => {
+  try {
+    await whatsapp.sendOwnerOrderTemplateTestMessage();
+    res.json({ success: true, mode: 'meta_api_order_template' });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      error: err.message,
+      mode: 'meta_api_order_template'
+    });
+  }
 });
 
 // =============================================
@@ -134,11 +174,20 @@ async function finalizeOrder({ customerData, items, paymentMethod, paymentId }) 
   const ref   = 'JWD-' + uuid().substring(0, 8).toUpperCase();
   const order = ordersSvc.createOrder({ ref, customer: customerData, items, paymentMethod, paymentId });
 
-  await Promise.allSettled([
+  console.log(`\n📦 Nouvelle commande: ${ref} | ${customerData?.email} | ${paymentMethod}`);
+  console.log(`📱 Envoi WhatsApp propriétaire → ${process.env.OWNER_PHONE}`);
+
+  const results = await Promise.allSettled([
     email.sendOrderConfirmation(order),
     whatsapp.notifyOwnerNewOrder(order),
     whatsapp.confirmOrderToCustomer(order, customerData.phone)
   ]);
+
+  results.forEach((r, i) => {
+    const labels = ['Email', 'WhatsApp Owner', 'WhatsApp Client'];
+    if (r.status === 'rejected') console.warn(`⚠️  ${labels[i]} échoué:`, r.reason?.message);
+    else console.log(`✅ ${labels[i]} envoyé`);
+  });
 
   return order;
 }

@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Jawda AdsPilot — Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">J</div>
+    <div class="logo-text">
+      <span class="logo-main">JAWDA</span>
+      <span class="logo-sub">ADSPILOT</span>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <a href="#" class="nav-item active" onclick="showPage('dashboard',this)">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Dashboard
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('analyze',this)">
+      <svg viewBox="0 0 24 24"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+      Analyse & Ads
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('evaluate',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Évaluer Produit
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('winfinder',this)">
+      <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      WinFinder
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('campaigns',this)">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Campagnes Pub
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('products',this)">
+      <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Produits Validés
+    </a>
+    <a href="#" class="nav-item" onclick="showPage('orders',this)">
+      <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      Commandes
+    </a>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="store-badge">🇨🇦 Canada — JAWDA</div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="main">
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <button class="menu-btn" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <h1 class="page-title" id="pageTitle">Dashboard</h1>
+    </div>
+    <div class="topbar-right">
+      <div class="date-chip" id="todayDate"></div>
+      <div class="avatar">N</div>
+    </div>
+  </header>
+
+  <!-- PAGES -->
+  <div class="content">
+
+    <!-- ═══ DASHBOARD ═══ -->
+    <section id="page-dashboard" class="page active">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon green"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div>
+          <div>
+            <div class="stat-val" id="stat-winners">0</div>
+            <div class="stat-lbl">Produits Winners</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon blue"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+          <div>
+            <div class="stat-val" id="stat-campaigns">0</div>
+            <div class="stat-lbl">Campagnes Actives</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon orange"><svg viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div>
+            <div class="stat-val" id="stat-revenue">CA$0</div>
+            <div class="stat-lbl">Revenus Estimés</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon purple"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+          <div>
+            <div class="stat-val" id="stat-roas">0x</div>
+            <div class="stat-lbl">ROAS Moyen</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <div class="card">
+          <div class="card-header">
+            <h3>🔥 Winners Urgents</h3>
+            <button class="btn-sm" onclick="showPage('evaluate', document.querySelector('[onclick*=evaluate]'))">+ Évaluer</button>
+          </div>
+          <div id="urgent-list" class="empty-state">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <p>Aucun produit évalué encore.<br>Clique sur <strong>Évaluer Produit</strong> pour commencer.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <h3>📊 Campagnes en cours</h3>
+            <button class="btn-sm" onclick="showPage('campaigns', document.querySelector('[onclick*=campaigns]'))">+ Campagne</button>
+          </div>
+          <div id="dash-campaigns" class="empty-state">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+            <p>Aucune campagne active.<br>Ajoute ta première pub Facebook ou TikTok.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt-16">
+        <div class="card-header"><h3>📋 Activité récente</h3></div>
+        <div id="activity-log" class="activity-list">
+          <div class="activity-item">
+            <div class="activity-dot green"></div>
+            <div class="activity-text">Bienvenue sur JAWDA Pilot — Commence par évaluer un produit !</div>
+            <div class="activity-time">Maintenant</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ ANALYSE & ADS ═══ -->
+    <section id="page-analyze" class="page">
+
+      <!-- STEP INDICATOR -->
+      <div class="steps-bar">
+        <div class="step active" id="step-ind-1"><span class="step-num">1</span> Produit</div>
+        <div class="step-line"></div>
+        <div class="step" id="step-ind-2"><span class="step-num">2</span> Audience</div>
+        <div class="step-line"></div>
+        <div class="step" id="step-ind-3"><span class="step-num">3</span> Angles</div>
+        <div class="step-line"></div>
+        <div class="step" id="step-ind-4"><span class="step-num">4</span> Ad Copy + Ciblage</div>
+      </div>
+
+      <!-- STEP 1 — PRODUIT -->
+      <div class="ana-step" id="ana-step-1">
+        <div class="card">
+          <div class="card-header"><h3>🛍️ Étape 1 — Décris ton produit</h3></div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nom du produit *</label>
+              <input type="text" id="a-name" placeholder="ex: VLift Invisible Lifting Tape"/>
+            </div>
+            <div class="form-group">
+              <label>Niche</label>
+              <select id="a-niche">
+                <option value="beauty">✨ Beauté / Skincare</option>
+                <option value="clothing">👗 Vêtements Femmes</option>
+                <option value="accessories">💍 Accessoires Mode</option>
+                <option value="fitness">💪 Fitness / Santé</option>
+                <option value="home">🏠 Maison / Cuisine</option>
+                <option value="tech">📱 Tech / Gadgets</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Que fait ce produit ? (1-2 phrases simples)</label>
+            <textarea id="a-what" rows="2" placeholder="ex: Un ruban adhésif invisible qui soulève et galbe la poitrine sans soutien-gorge..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Quel problème résout-il ?</label>
+              <input type="text" id="a-problem" placeholder="ex: Les femmes veulent porter des robes décolletées sans soutien-gorge visible"/>
+            </div>
+            <div class="form-group">
+              <label>Quel est le WOW en 3 secondes ?</label>
+              <input type="text" id="a-wow" placeholder="ex: On voit le avant/après immédiatement — résultat visible en 10 sec"/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Prix de vente (CA$)</label>
+              <input type="number" id="a-price" placeholder="29" min="0" step="0.5"/>
+            </div>
+            <div class="form-group">
+              <label>Marché cible</label>
+              <select id="a-market">
+                <option value="canada">🇨🇦 Canada (FR + EN)</option>
+                <option value="canada-en">🇨🇦 Canada (EN only)</option>
+                <option value="canada-fr">🇨🇦 Québec (FR only)</option>
+                <option value="us">🇺🇸 USA</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Concurrents / Ce qu'on voit déjà sur le marché</label>
+            <input type="text" id="a-comp" placeholder="ex: NuBra, Fashion Tape — vendus $15-25 sur Amazon CA"/>
+          </div>
+          <button class="btn-primary w-full" onclick="goStep(2)">Suivant — Définir l'audience →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2 — AUDIENCE -->
+      <div class="ana-step" id="ana-step-2" style="display:none">
+        <div class="card">
+          <div class="card-header">
+            <h3>🎯 Étape 2 — Qui est ton client idéal ?</h3>
+            <button class="btn-sm" onclick="goStep(1)">← Retour</button>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tranche d'âge principale</label>
+              <select id="a-age">
+                <option value="18-24">18-24 ans (Gen Z)</option>
+                <option value="25-34" selected>25-34 ans (Millennials)</option>
+                <option value="35-44">35-44 ans</option>
+                <option value="45-54">45-54 ans</option>
+                <option value="18-44">18-44 ans (large)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Genre cible</label>
+              <select id="a-gender">
+                <option value="women">Femmes uniquement</option>
+                <option value="men">Hommes uniquement</option>
+                <option value="all">Tous genres</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Style de vie / Personnalité (coche tout ce qui correspond)</label>
+            <div class="checkbox-grid" id="lifestyle-grid">
+              <label class="check-item"><input type="checkbox" value="fashion"/> Mode & tendances</label>
+              <label class="check-item"><input type="checkbox" value="beauty"/> Beauté & soins</label>
+              <label class="check-item"><input type="checkbox" value="fitness"/> Fitness & bien-être</label>
+              <label class="check-item"><input type="checkbox" value="budget"/> Bons plans & économies</label>
+              <label class="check-item"><input type="checkbox" value="luxury"/> Quiet luxury & élégance</label>
+              <label class="check-item"><input type="checkbox" value="mom"/> Mamans & famille</label>
+              <label class="check-item"><input type="checkbox" value="career"/> Femme active & carrière</label>
+              <label class="check-item"><input type="checkbox" value="confidence"/> Confiance en soi</label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Quelle douleur émotionnelle ce produit soulage-t-il ?</label>
+            <select id="a-pain">
+              <option value="confidence">Manque de confiance en son apparence</option>
+              <option value="time">Manque de temps — veut aller vite</option>
+              <option value="money">Dépense trop d'argent pour ce problème</option>
+              <option value="tired">Fatiguée des solutions qui ne marchent pas</option>
+              <option value="invisible">Se sent invisible / pas remarquée</option>
+              <option value="aging">Inquiète du vieillissement / changement corporel</option>
+              <option value="occasion">Peur de rater une occasion (event, date, photo)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Quand utilise-t-elle ce produit ? (contexte d'usage)</label>
+            <input type="text" id="a-when" placeholder="ex: Avant un event, soirée, mariage, date night, shooting photo"/>
+          </div>
+          <div class="form-group">
+            <label>Intérêts Facebook/TikTok à cibler (optionnel)</label>
+            <input type="text" id="a-interests" placeholder="ex: Zara, H&M, SHEIN, Fashion Nova, TikTok Fashion"/>
+          </div>
+          <button class="btn-primary w-full" onclick="goStep(3)">Générer les angles marketing →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3 — ANGLES -->
+      <div class="ana-step" id="ana-step-3" style="display:none">
+        <div class="card-header mb-16">
+          <h3>💡 Étape 3 — Angles marketing générés</h3>
+          <button class="btn-sm" onclick="goStep(2)">← Retour</button>
+        </div>
+        <div id="angles-grid" class="angles-grid"></div>
+        <button class="btn-primary" style="margin-top:16px;width:100%" id="btn-gen-copy" onclick="goStep(4)">Générer Ad Copy + Ciblage pour l'angle choisi →</button>
+      </div>
+
+      <!-- STEP 4 — AD COPY + CIBLAGE -->
+      <div class="ana-step" id="ana-step-4" style="display:none">
+        <div class="card-header mb-16">
+          <h3>✍️ Étape 4 — Ad Copy + Script + Ciblage</h3>
+          <button class="btn-sm" onclick="goStep(3)">← Retour</button>
+        </div>
+        <div id="adcopy-output"></div>
+      </div>
+
+    </section>
+
+    <!-- ═══ ÉVALUER PRODUIT ═══ -->
+    <section id="page-evaluate" class="page">
+      <div class="eval-layout">
+        <div class="card eval-form-card">
+          <div class="card-header"><h3>🎯 Évaluation Produit — Score /180</h3></div>
+          <form id="evalForm" onsubmit="evaluerProduit(event)">
+            <div class="form-group">
+              <label>Nom du produit *</label>
+              <input type="text" id="e-name" placeholder="ex: Seamless Sculpting Bodysuit" required/>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Niche</label>
+                <select id="e-niche">
+                  <option value="clothing">👗 Clothing</option>
+                  <option value="accessories">💍 Accessoires</option>
+                  <option value="beauty">✨ Beauté/Gadgets</option>
+                  <option value="kitchen">🍳 Cuisine</option>
+                  <option value="bathroom">🛁 Salle de Bain</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Lead Market</label>
+                <select id="e-market">
+                  <option value="US">🇺🇸 USA → Canada</option>
+                  <option value="UK">🇬🇧 UK → Canada</option>
+                  <option value="CA">🇨🇦 Canada direct</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Coût 1688 (CA$)</label>
+                <input type="number" id="e-cost" placeholder="5.50" step="0.01" min="0"/>
+              </div>
+              <div class="form-group">
+                <label>Prix de vente JAWDA (CA$)</label>
+                <input type="number" id="e-price" placeholder="42.00" step="0.01" min="0"/>
+              </div>
+            </div>
+
+            <div class="scores-grid">
+              <div class="score-item">
+                <label>Wow Factor <span class="weight">×3</span></label>
+                <input type="range" id="s-wow" min="1" max="10" value="5" oninput="updateScore()"/>
+                <span class="score-val" id="v-wow">5/10</span>
+              </div>
+              <div class="score-item">
+                <label>Problème résolu <span class="weight">×3</span></label>
+                <input type="range" id="s-prob" min="1" max="10" value="5" oninput="updateScore()"/>
+                <span class="score-val" id="v-prob">5/10</span>
+              </div>
+              <div class="score-item">
+                <label>Canada Fit <span class="weight">×2</span></label>
+                <input type="range" id="s-ca" min="1" max="10" value="5" oninput="updateScore()"/>
+                <span class="score-val" id="v-ca">5/10</span>
+              </div>
+              <div class="score-item">
+                <label>Saturation CA faible <span class="weight">×2</span></label>
+                <input type="range" id="s-sat" min="1" max="10" value="5" oninput="updateScore()"/>
+                <span class="score-val" id="v-sat">5/10</span>
+              </div>
+              <div class="score-item">
+                <label>Saisonnalité <span class="weight">×1</span></label>
+                <input type="range" id="s-saison" min="1" max="10" value="5" oninput="updateScore()"/>
+                <span class="score-val" id="v-saison">5/10</span>
+              </div>
+              <div class="score-item">
+                <label>Logistique <span class="weight">×2</span></label>
+                <input type="range" id="s-logi" min="1" max="10" value="5" oninput="updateScore()"/>
+                <span class="score-val" id="v-logi">5/10</span>
+              </div>
+              <div class="score-item">
+                <label>Légal/Sécurité <span class="weight">×2</span></label>
+                <input type="range" id="s-legal" min="1" max="10" value="8" oninput="updateScore()"/>
+                <span class="score-val" id="v-legal">8/10</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Signal Pipiads / Preuve pub</label>
+              <input type="text" id="e-signal" placeholder="ex: 344K unités Q1 2026 TikTok US"/>
+            </div>
+            <div class="form-group">
+              <label>Hook vidéo (3 secondes)</label>
+              <textarea id="e-hook" rows="2" placeholder="ex: POV: you finally found the bodysuit that actually sculpts..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-primary w-full">Évaluer ce produit →</button>
+          </form>
+        </div>
+
+        <div class="eval-result-card">
+          <div class="card score-display-card">
+            <div class="score-circle" id="score-circle">
+              <div class="score-number" id="score-number">90</div>
+              <div class="score-total">/180</div>
+            </div>
+            <div class="score-verdict" id="score-verdict">À VALIDER ⚡</div>
+            <div class="score-breakdown" id="score-breakdown">
+              <div class="breakdown-row"><span>Wow Factor</span><span id="b-wow">15/30</span></div>
+              <div class="breakdown-row"><span>Problème</span><span id="b-prob">15/30</span></div>
+              <div class="breakdown-row"><span>Marge</span><span id="b-marge">—/30</span></div>
+              <div class="breakdown-row"><span>Canada Fit</span><span id="b-ca">10/20</span></div>
+              <div class="breakdown-row"><span>Saturation</span><span id="b-sat">10/20</span></div>
+              <div class="breakdown-row"><span>Saisonnalité</span><span id="b-saison">5/10</span></div>
+              <div class="breakdown-row"><span>Logistique</span><span id="b-logi">10/20</span></div>
+              <div class="breakdown-row"><span>Légal</span><span id="b-legal">16/20</span></div>
+            </div>
+          </div>
+          <div class="card margin-card" id="margin-card">
+            <h4>💰 Analyse Financière</h4>
+            <div id="fin-analysis" class="fin-rows">
+              <p style="color:var(--text-muted);font-size:13px">Entre un coût et un prix de vente pour voir la marge.</p>
+            </div>
+          </div>
+          <div class="card" id="eval-history-card">
+            <div class="card-header"><h4>🕐 Dernières évaluations</h4></div>
+            <div id="eval-history">
+              <p style="color:var(--text-muted);font-size:13px;padding:8px 0">Aucune évaluation encore.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ WINFINDER ═══ -->
+    <section id="page-winfinder" class="page">
+      <div class="wf-toolbar">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="wf-search" placeholder="Rechercher un produit..." oninput="filterWinFinder()"/>
+        </div>
+        <select id="wf-niche" onchange="filterWinFinder()">
+          <option value="all">Toutes les niches</option>
+          <option value="clothing">👗 Clothing</option>
+          <option value="accessories">💍 Accessoires</option>
+          <option value="beauty">✨ Beauté</option>
+          <option value="kitchen">🍳 Cuisine</option>
+          <option value="bathroom">🛁 Salle de Bain</option>
+        </select>
+        <select id="wf-score" onchange="filterWinFinder()">
+          <option value="all">Tous les scores</option>
+          <option value="160">🔥 MUST TEST (≥160)</option>
+          <option value="150">✅ TEST (≥150)</option>
+          <option value="140">⚡ À VALIDER (≥140)</option>
+        </select>
+        <button class="btn-primary" onclick="addWinFinderProduct()">+ Ajouter produit</button>
+      </div>
+
+      <div id="wf-grid" class="wf-grid">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- ═══ CAMPAGNES ═══ -->
+    <section id="page-campaigns" class="page">
+      <div class="camp-toolbar">
+        <button class="btn-primary" onclick="openCampaignModal()">+ Nouvelle Campagne</button>
+        <div class="camp-filters">
+          <button class="filter-btn active" onclick="filterCamp('all',this)">Toutes</button>
+          <button class="filter-btn" onclick="filterCamp('active',this)">Actives</button>
+          <button class="filter-btn" onclick="filterCamp('paused',this)">Pausées</button>
+          <button class="filter-btn" onclick="filterCamp('stopped',this)">Stoppées</button>
+        </div>
+      </div>
+
+      <div id="camp-list" class="camp-list">
+        <div class="empty-state full">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <p>Aucune campagne pour l'instant.<br>Ajoute ta première pub Facebook ou TikTok.</p>
+        </div>
+      </div>
+
+      <!-- Campaign Modal -->
+      <div class="modal-overlay" id="campModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3>Nouvelle Campagne</h3>
+            <button class="modal-close" onclick="closeCampaignModal()">✕</button>
+          </div>
+          <form onsubmit="saveCampaign(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Produit</label>
+                <input type="text" id="c-product" placeholder="Nom du produit" required/>
+              </div>
+              <div class="form-group">
+                <label>Plateforme</label>
+                <select id="c-platform">
+                  <option value="facebook">Facebook Ads</option>
+                  <option value="tiktok">TikTok Ads</option>
+                  <option value="both">Facebook + TikTok</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Budget/jour (CA$)</label>
+                <input type="number" id="c-budget" placeholder="30" min="1" step="1" required/>
+              </div>
+              <div class="form-group">
+                <label>CPA cible (CA$)</label>
+                <input type="number" id="c-cpa-target" placeholder="15" min="1" step="0.5"/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Date début</label>
+                <input type="date" id="c-start"/>
+              </div>
+              <div class="form-group">
+                <label>Kill Rule — stopper si CPA ></label>
+                <input type="number" id="c-kill" placeholder="25" min="1" step="0.5"/>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Angle pub</label>
+              <input type="text" id="c-angle" placeholder="ex: POV: You just found..."/>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn-outline" onclick="closeCampaignModal()">Annuler</button>
+              <button type="submit" class="btn-primary">Créer la campagne →</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Update Results Modal -->
+      <div class="modal-overlay" id="updateModal">
+        <div class="modal modal-sm">
+          <div class="modal-header">
+            <h3>Mettre à jour les résultats</h3>
+            <button class="modal-close" onclick="document.getElementById('updateModal').classList.remove('open')">✕</button>
+          </div>
+          <form onsubmit="saveUpdate(event)">
+            <input type="hidden" id="u-id"/>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Dépenses totales (CA$)</label>
+                <input type="number" id="u-spent" placeholder="90" step="0.01" min="0"/>
+              </div>
+              <div class="form-group">
+                <label>Revenus générés (CA$)</label>
+                <input type="number" id="u-revenue" placeholder="270" step="0.01" min="0"/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Commandes</label>
+                <input type="number" id="u-orders" placeholder="6" min="0"/>
+              </div>
+              <div class="form-group">
+                <label>Statut</label>
+                <select id="u-status">
+                  <option value="active">✅ Active</option>
+                  <option value="paused">⏸ Pausée</option>
+                  <option value="stopped">🛑 Stoppée</option>
+                  <option value="scaling">🚀 Scaling</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn-outline" onclick="document.getElementById('updateModal').classList.remove('open')">Annuler</button>
+              <button type="submit" class="btn-primary">Sauvegarder</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ PRODUITS VALIDÉS ═══ -->
+    <section id="page-products" class="page">
+      <div class="card-header mb-16">
+        <h3>✅ Produits validés — prêts à ajouter dans JAWDA</h3>
+        <button class="btn-primary" onclick="exportToStore()">Exporter vers app.js</button>
+      </div>
+      <div id="validated-list" class="prod-table-wrap">
+        <div class="empty-state full">
+          <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <p>Valide des produits depuis WinFinder ou Évaluation pour les voir ici.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ COMMANDES ═══ -->
+    <section id="page-orders" class="page">
+      <div class="orders-toolbar">
+        <button class="btn-primary" onclick="openOrderModal()">+ Nouvelle Commande</button>
+        <div class="search-box">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Rechercher commande..." oninput="filterOrders(this.value)"/>
+        </div>
+      </div>
+      <div id="orders-list" class="orders-list">
+        <div class="empty-state full">
+          <svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <p>Aucune commande encore.<br>Ajoute tes premières commandes WhatsApp ou Facebook.</p>
+        </div>
+      </div>
+
+      <div class="modal-overlay" id="orderModal">
+        <div class="modal">
+          <div class="modal-header">
+            <h3>Nouvelle Commande</h3>
+            <button class="modal-close" onclick="document.getElementById('orderModal').classList.remove('open')">✕</button>
+          </div>
+          <form onsubmit="saveOrder(event)">
+            <div class="form-row">
+              <div class="form-group">
+                <label>Nom client</label>
+                <input type="text" id="o-name" placeholder="Prénom Nom" required/>
+              </div>
+              <div class="form-group">
+                <label>Source</label>
+                <select id="o-source">
+                  <option value="facebook">Facebook</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="website">Site web</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Produit</label>
+                <input type="text" id="o-product" placeholder="Nom du produit" required/>
+              </div>
+              <div class="form-group">
+                <label>Montant (CA$)</label>
+                <input type="number" id="o-amount" placeholder="58.00" step="0.01" required/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Téléphone / WhatsApp</label>
+                <input type="text" id="o-phone" placeholder="+1 613 xxx-xxxx"/>
+              </div>
+              <div class="form-group">
+                <label>Adresse de livraison</label>
+                <input type="text" id="o-address" placeholder="Ottawa, ON"/>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn-outline" onclick="document.getElementById('orderModal').classList.remove('open')">Annuler</button>
+              <button type="submit" class="btn-primary">Enregistrer →</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /content -->
+</main>
+
+<div id="toast" class="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>

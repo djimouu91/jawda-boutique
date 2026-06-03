@@ -1,46 +1,198 @@
 // ═══════════════════════════════════════════════════════════
-// JAWDA — WhatsApp Service
+// JAWDA — WhatsApp Service (Meta WhatsApp Business API)
 //
 // MODE AUTO-DETECT:
-//   TWILIO_ACCOUNT_SID configuré → messages envoyés automatiquement
-//   Non configuré             → liens wa.me générés dans le CRM
+//   META_WA_PHONE_ID + META_WA_TOKEN configurés → messages auto
+//   Non configurés                              → liens wa.me dans CRM
 // ═══════════════════════════════════════════════════════════
 
-const TWILIO_SID   = process.env.TWILIO_ACCOUNT_SID || '';
-const TWILIO_TOKEN = process.env.TWILIO_AUTH_TOKEN  || '';
-const FROM         = process.env.TWILIO_WHATSAPP_FROM || 'whatsapp:+14155238886';
-const OWNER_PHONE  = process.env.OWNER_PHONE || ''; // ex: +15141234567
+const https      = require('https');
+const OWNER_PHONE = process.env.OWNER_PHONE || '';
 
-const TWILIO_ENABLED = TWILIO_SID.startsWith('AC') && TWILIO_SID.length > 20
-                    && !TWILIO_SID.includes('xxx');
+const META_PHONE_ID = process.env.META_WA_PHONE_ID || '';
+const META_TOKEN    = process.env.META_WA_TOKEN    || '';
+const ORDER_TEMPLATE_NAME = process.env.META_WA_ORDER_TEMPLATE || 'jawda_new_order_alert';
+const ORDER_TEMPLATE_LANG = process.env.META_WA_ORDER_TEMPLATE_LANG || 'fr_CA';
 
-const client = TWILIO_ENABLED
-  ? require('twilio')(TWILIO_SID, TWILIO_TOKEN)
-  : null;
+// Meta est activé seulement si les deux valeurs sont configurées.
+// Sinon le CRM garde les liens wa.me comme plan B.
+const META_ENABLED = Boolean(META_PHONE_ID && META_TOKEN && !META_TOKEN.includes('YOUR'));
 
 // ── Génère un lien wa.me cliquable ──────────────────────────
 function waLink(phone, message) {
-  const clean = phone.replace(/[^0-9]/g, '');
+  const clean   = phone.replace(/[^0-9]/g, '');
   const encoded = encodeURIComponent(message);
   return `https://wa.me/${clean}?text=${encoded}`;
 }
 
-// ── Envoie via Twilio OU logue le lien wa.me ────────────────
-async function send(toPhone, body) {
-  const to = toPhone.startsWith('whatsapp:') ? toPhone : `whatsapp:${toPhone}`;
+// ── Envoie via Meta Graph API ────────────────────────────────
+function sendMetaMessage(toPhone, bodyText) {
+  return new Promise((resolve, reject) => {
+    // Nettoyer le numéro (enlever +, espaces)
+    const to = toPhone.replace(/[^0-9]/g, '');
 
-  if (TWILIO_ENABLED) {
+    const payload = JSON.stringify({
+      messaging_product: 'whatsapp',
+      to,
+      type: 'text',
+      text: { body: bodyText }
+    });
+
+    const options = {
+      hostname: 'graph.facebook.com',
+      path: `/v19.0/${META_PHONE_ID}/messages`,
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${META_TOKEN}`,
+        'Content-Type':  'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => { data += chunk; });
+      res.on('end', () => {
+        const parsed = JSON.parse(data);
+        if (res.statusCode === 200) {
+          console.log(`✅ WhatsApp (Meta) envoyé → +${to}`);
+          resolve(parsed);
+        } else {
+          console.warn(`⚠️  WhatsApp Meta erreur [${res.statusCode}]:`, data);
+          reject(new Error(data));
+        }
+      });
+    });
+
+    req.on('error', reject);
+    req.write(payload);
+    req.end();
+  });
+}
+
+function sendMetaTemplate(toPhone, templateName = 'hello_world', languageCode = 'en_US', components = []) {
+  return new Promise((resolve, reject) => {
+    const to = toPhone.replace(/[^0-9]/g, '');
+
+    const payload = JSON.stringify({
+      messaging_product: 'whatsapp',
+      to,
+      type: 'template',
+      template: {
+        name: templateName,
+        language: { code: languageCode },
+        ...(components.length ? { components } : {})
+      }
+    });
+
+    const options = {
+      hostname: 'graph.facebook.com',
+      path: `/v19.0/${META_PHONE_ID}/messages`,
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${META_TOKEN}`,
+        'Content-Type':  'application/json',
+        'Content-Length': Buffer.byteLength(payload)
+      }
+    };
+
+    const req = https.request(options, (res) => {
+      let data = '';
+      res.on('data', chunk => { data += chunk; });
+      res.on('end', () => {
+        const parsed = JSON.parse(data);
+        if (res.statusCode === 200) {
+          console.log(`✅ WhatsApp template (${templateName}) envoyé → +${to}`, parsed);
+          resolve(parsed);
+        } else {
+          console.warn(`⚠️  WhatsApp template erreur [${res.statusCode}]:`, data);
+          reject(new Error(data));
+        }
+      });
+    });
+
+    req.on('error', reject);
+    req.write(payload);
+    req.end();
+  });
+}
+
+// ── Envoie via Meta OU logue le lien wa.me ──────────────────
+async function send(toPhone, body) {
+  if (META_ENABLED) {
     try {
-      await client.messages.create({ from: FROM, to, body });
-      console.log(`✅ WhatsApp envoyé → ${toPhone}`);
+      await sendMetaMessage(toPhone, body);
     } catch (err) {
-      console.warn(`⚠️  WhatsApp Twilio erreur: ${err.message}`);
+      console.warn('⚠️  Meta WhatsApp échoué — fallback wa.me');
+      const phone = toPhone.replace(/[^0-9]/g, '');
+      console.log(`\n📱 [WhatsApp fallback]\n${waLink(phone, body)}\n`);
     }
   } else {
-    // Mode libre — affiche lien wa.me dans la console
-    const phone = toPhone.replace('whatsapp:', '').trim();
+    const phone = toPhone.replace(/[^0-9]/g, '');
     console.log(`\n📱 [WhatsApp — cliquer pour envoyer]\n${waLink(phone, body)}\n`);
   }
+}
+
+async function sendOwnerTestMessage() {
+  if (!OWNER_PHONE) {
+    throw new Error('OWNER_PHONE non configuré dans .env');
+  }
+
+  const body =
+`✅ Test WhatsApp Business API — JAWDA
+
+Si tu reçois ce message, ton site JAWDA est bien lié à WhatsApp Business.
+
+Les prochaines commandes pourront déclencher une notification automatique ici.`;
+
+  await send(OWNER_PHONE, body);
+}
+
+async function sendOwnerTemplateTestMessage() {
+  if (!OWNER_PHONE) {
+    throw new Error('OWNER_PHONE non configuré dans .env');
+  }
+  await sendMetaTemplate(OWNER_PHONE, 'hello_world', 'en_US');
+}
+
+async function sendOwnerOrderTemplate(order) {
+  if (!OWNER_PHONE) {
+    throw new Error('OWNER_PHONE non configuré dans .env');
+  }
+
+  const c = order.customerData || order.customer || {};
+  const items = (order.items || [])
+    .map(i => `${i.name} x${i.qty}`)
+    .join(', ')
+    .slice(0, 900);
+  const total = order.total || (order.items || [])
+    .reduce((s, i) => s + Number(i.price || 0) * Number(i.qty || 1), 0)
+    .toFixed(2);
+
+  await sendMetaTemplate(OWNER_PHONE, ORDER_TEMPLATE_NAME, ORDER_TEMPLATE_LANG, [{
+    type: 'body',
+    parameters: [
+      { type: 'text', parameter_name: 'order_ref',   text: order.ref || 'JWD-TEST' },
+      { type: 'text', parameter_name: 'order_total', text: `CA$${total}` }
+    ]
+  }]);
+}
+
+async function sendOwnerOrderTemplateTestMessage() {
+  await sendOwnerOrderTemplate({
+    ref: 'JWD-TEMPLATE',
+    total: '0.57',
+    paymentMethod: 'Stripe',
+    customer: {
+      firstName: 'Client',
+      lastName: 'Test',
+      email: 'test@example.com',
+      phone: OWNER_PHONE,
+      city: 'Ottawa',
+      country: 'Canada'
+    },
+    items: [{ name: 'Test Product', price: 0.5, qty: 1 }]
+  });
 }
 
 // ── Retourne l'URL wa.me pour le CRM (bouton vert) ──────────
@@ -51,15 +203,24 @@ function getWaLink(phone, message) {
   return waLink(clean, message);
 }
 
-// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 //  MESSAGES
-// ══════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
 
 // 1. Alerte propriétaire — nouvelle commande
 async function notifyOwnerNewOrder(order) {
   if (!OWNER_PHONE) {
-    console.log('ℹ️  OWNER_PHONE non configuré dans .env — ajoutez votre numéro WhatsApp');
+    console.log('ℹ️  OWNER_PHONE non configuré dans .env');
     return;
+  }
+
+  if (META_ENABLED && ORDER_TEMPLATE_NAME) {
+    try {
+      await sendOwnerOrderTemplate(order);
+      return;
+    } catch (err) {
+      console.warn('Template WhatsApp commande échoué — fallback message libre:', err.message);
+    }
   }
 
   const subtotal = (order.items || []).reduce((s, i) => s + i.price * i.qty, 0);
@@ -159,7 +320,7 @@ async function notifyOwnerStatusChange(order, newStatus) {
   await send(OWNER_PHONE, body);
 }
 
-// ── Liens wa.me pour le CRM (sans Twilio) ──────────────────
+// ── Liens wa.me pour le CRM (bouton vert) ───────────────────
 function getCustomerWaLink(order) {
   const c     = order.customerData || order.customer || {};
   const phone = c.phone;
@@ -186,7 +347,10 @@ module.exports = {
   notifyShipped,
   notifyDelivered,
   notifyOwnerStatusChange,
+  sendOwnerTestMessage,
+  sendOwnerTemplateTestMessage,
+  sendOwnerOrderTemplateTestMessage,
   getCustomerWaLink,
   getOwnerWaLink,
-  TWILIO_ENABLED
+  META_ENABLED
 };
